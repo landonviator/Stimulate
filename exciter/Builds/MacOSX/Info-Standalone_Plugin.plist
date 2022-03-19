@@ -8,11 +8,11 @@
     <key>CFBundleIconFile</key>
     <string></string>
     <key>CFBundleIdentifier</key>
-    <string>com.ViatorDSP.exciter</string>
+    <string>com.ViatorDSP.Stimulate</string>
     <key>CFBundleName</key>
-    <string>exciter</string>
+    <string>Stimulate</string>
     <key>CFBundleDisplayName</key>
-    <string>exciter</string>
+    <string>Stimulate</string>
     <key>CFBundlePackageType</key>
     <string>APPL</string>
     <key>CFBundleSignature</key>

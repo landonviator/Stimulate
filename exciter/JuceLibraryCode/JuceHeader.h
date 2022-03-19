@@ -41,7 +41,7 @@
 #if ! JUCE_DONT_DECLARE_PROJECTINFO
 namespace ProjectInfo
 {
-    const char* const  projectName    = "exciter";
+    const char* const  projectName    = "Stimulate";
     const char* const  companyName    = "Viator DSP";
     const char* const  versionString  = "1.0.0";
     const int          versionNumber  = 0x10000;

@@ -41,7 +41,7 @@
  #define JucePlugin_Name                   "Stimulate"
 #endif
 #ifndef  JucePlugin_Desc
- #define JucePlugin_Desc                   "exciter"
+ #define JucePlugin_Desc                   "Stimulate"
 #endif
 #ifndef  JucePlugin_Manufacturer
  #define JucePlugin_Manufacturer           "Viator DSP"
@@ -98,16 +98,16 @@
  #define JucePlugin_AUSubType              JucePlugin_PluginCode
 #endif
 #ifndef  JucePlugin_AUExportPrefix
- #define JucePlugin_AUExportPrefix         exciterAU
+ #define JucePlugin_AUExportPrefix         StimulateAU
 #endif
 #ifndef  JucePlugin_AUExportPrefixQuoted
- #define JucePlugin_AUExportPrefixQuoted   "exciterAU"
+ #define JucePlugin_AUExportPrefixQuoted   "StimulateAU"
 #endif
 #ifndef  JucePlugin_AUManufacturerCode
  #define JucePlugin_AUManufacturerCode     JucePlugin_ManufacturerCode
 #endif
 #ifndef  JucePlugin_CFBundleIdentifier
- #define JucePlugin_CFBundleIdentifier     com.ViatorDSP.exciter
+ #define JucePlugin_CFBundleIdentifier     com.ViatorDSP.Stimulate
 #endif
 #ifndef  JucePlugin_RTASCategory
  #define JucePlugin_RTASCategory           0
@@ -125,7 +125,7 @@
  #define JucePlugin_RTASDisableMultiMono   0
 #endif
 #ifndef  JucePlugin_AAXIdentifier
- #define JucePlugin_AAXIdentifier          com.ViatorDSP.exciter
+ #define JucePlugin_AAXIdentifier          com.ViatorDSP.Stimulate
 #endif
 #ifndef  JucePlugin_AAXManufacturerCode
  #define JucePlugin_AAXManufacturerCode    JucePlugin_ManufacturerCode

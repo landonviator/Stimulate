@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<JUCERPROJECT id="OIhsSo" name="exciter" projectType="audioplug" useAppConfig="0"
+<JUCERPROJECT id="OIhsSo" name="Stimulate" projectType="audioplug" useAppConfig="0"
               addUsingNamespaceToJuceHeader="0" jucerFormatVersion="1" companyName="Viator DSP"
               pluginName="Stimulate">
-  <MAINGROUP id="QaAXOy" name="exciter">
+  <MAINGROUP id="QaAXOy" name="Stimulate">
     <GROUP id="{04061C20-3ECD-6EEE-A90C-98D3613905F7}" name="Source">
       <FILE id="Yf4MsF" name="PluginProcessor.cpp" compile="1" resource="0"
             file="Source/PluginProcessor.cpp"/>
