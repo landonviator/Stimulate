@@ -21,8 +21,10 @@ ExciterAudioProcessor::ExciterAudioProcessor()
                      #endif
                        ),
 treeState (*this, nullptr, "PARAMETER", createParameterLayout())
+, oversamplingModel(2, 3, juce::dsp::Oversampling<float>::FilterType::filterHalfBandPolyphaseIIR)
 #endif
 {
+    treeState.addParameterListener ("os", this);
     treeState.addParameterListener ("input", this);
     treeState.addParameterListener ("range", this);
     treeState.addParameterListener ("oddeven", this);
@@ -31,6 +33,7 @@ treeState (*this, nullptr, "PARAMETER", createParameterLayout())
 
 ExciterAudioProcessor::~ExciterAudioProcessor()
 {
+    treeState.removeParameterListener ("os", this);
     treeState.removeParameterListener ("input", this);
     treeState.removeParameterListener ("range", this);
     treeState.removeParameterListener ("oddeven", this);
@@ -44,11 +47,13 @@ juce::AudioProcessorValueTreeState::ParameterLayout ExciterAudioProcessor::creat
   juce::StringArray models = {"Odd", "Even", "Tape", "Transformer"};
 
   // Make sure to update the number of reservations after adding params
+  auto pOS = std::make_unique<juce::AudioParameterBool>("os", "OS", false);
   auto pInput = std::make_unique<juce::AudioParameterFloat>("input", "Input", 0.0, 20.0, 0.0);
   auto pRange = std::make_unique<juce::AudioParameterFloat>("range", "Range", juce::NormalisableRange<float>(1000.0, 20000.0, 1.0, 0.3), 15000.0);
   auto pOddEven = std::make_unique<juce::AudioParameterFloat>("oddeven", "Odd-Even", 0.0, 1.0, 0.5);
   auto pMix = std::make_unique<juce::AudioParameterFloat>("mix", "Mix", 0.0, 1.0, 0.0);
   
+  params.push_back(std::move(pOS));
   params.push_back(std::move(pInput));
   params.push_back(std::move(pRange));
   params.push_back(std::move(pOddEven));
@@ -59,6 +64,11 @@ juce::AudioProcessorValueTreeState::ParameterLayout ExciterAudioProcessor::creat
 
 void ExciterAudioProcessor::parameterChanged(const juce::String &parameterID, float newValue)
 {
+    if (parameterID == "os")
+    {
+        osToggle = newValue;
+    }
+    
     if (parameterID == "input")
     {
         rawGain = viator_utils::utils::dbToGain(newValue);
@@ -159,6 +169,15 @@ void ExciterAudioProcessor::prepareToPlay (double sampleRate, int samplesPerBloc
     bottomBandFilter.prepare(spec);
     bottomBandFilter.setType(juce::dsp::LinkwitzRileyFilterType::lowpass);
     bottomBandFilter.setCutoffFrequency(treeState.getRawParameterValue("range")->load());
+    
+    
+    oversamplingModel.initProcessing(samplesPerBlock);
+    
+    rawGain = viator_utils::utils::dbToGain(treeState.getRawParameterValue("input")->load());
+    cutoff = treeState.getRawParameterValue("range")->load();
+    mix = treeState.getRawParameterValue("mix")->load();
+    oddEvenMix = treeState.getRawParameterValue("oddeven")->load();
+    //osToggle = *treeState.getRawParameterValue("os");
 }
 
 void ExciterAudioProcessor::releaseResources()
@@ -198,12 +217,28 @@ void ExciterAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce
     juce::ScopedNoDenormals noDenormals;
 
     juce::dsp::AudioBlock<float> block (buffer);
+    juce::dsp::AudioBlock<float> upSampledBlock (buffer);
     
-    for (int sample = 0; sample < block.getNumSamples(); ++sample)
+    if (osToggle)
     {
-        for (int ch = 0; ch < block.getNumChannels(); ++ch)
+        upSampledBlock = oversamplingModel.processSamplesUp(block);
+        stimulationBlock(upSampledBlock);
+        oversamplingModel.processSamplesDown(block);
+    }
+    
+    else
+    {
+        stimulationBlock(block);
+    }
+}
+
+void ExciterAudioProcessor::stimulationBlock(juce::dsp::AudioBlock<float> &currentBlock)
+{
+    for (int ch = 0; ch < currentBlock.getNumChannels(); ++ch)
+    {
+        for (int sample = 0; sample < currentBlock.getNumSamples(); ++sample)
         {
-            float* data = block.getChannelPointer(ch);
+            float* data = currentBlock.getChannelPointer(ch);
             
             // Input
             const float input = data[sample];

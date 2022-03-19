@@ -69,9 +69,14 @@ private:
     float mix {0.0};
     float oddEvenMix {0.5};
     float cutoff {15000};
+    bool osToggle {false};
     
+    /** DSP */
     juce::dsp::LinkwitzRileyFilter<float> topBandFilter;
     juce::dsp::LinkwitzRileyFilter<float> bottomBandFilter;
+    juce::dsp::Oversampling<float> oversamplingModel;
+    
+    void stimulationBlock(juce::dsp::AudioBlock<float> &currentBlock);
     
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (ExciterAudioProcessor)
