@@ -222,12 +222,19 @@ void ExciterAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce
     if (osToggle)
     {
         upSampledBlock = oversamplingModel.processSamplesUp(block);
+        
+        /** TO DO*/
+        // Adjust samplerate
+        
         stimulationBlock(upSampledBlock);
         oversamplingModel.processSamplesDown(block);
     }
     
     else
     {
+        /** TO DO*/
+        // Adjust samplerate
+        
         stimulationBlock(block);
     }
 }
