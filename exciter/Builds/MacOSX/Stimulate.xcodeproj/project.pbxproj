@@ -57,6 +57,7 @@
 		BFC36FC93191B0924A5A7890 /* Carbon.framework */ = {isa = PBXBuildFile; fileRef = 1B6BC233F493FC338C40EF42; };
 		C4F72C3888EC056FEE2A6613 /* AudioToolbox.framework */ = {isa = PBXBuildFile; fileRef = AD64703A730DA84073CCC797; };
 		DE4AC7D5DD18B6D3EA7803BF /* include_juce_graphics.mm */ = {isa = PBXBuildFile; fileRef = BB0C8C49B7A1A2DB34B4C81E; };
+		E449523A66B0688325CDE9A1 /* include_viator_modules.cpp */ = {isa = PBXBuildFile; fileRef = 87235B7299096CB91DC1A9C1; };
 		E63966838BBCD6415248DCE5 /* PluginEditor.cpp */ = {isa = PBXBuildFile; fileRef = 99E32F1044643974EFF83384; };
 		E91D35B8F166B3267A0BDC31 /* include_juce_audio_formats.mm */ = {isa = PBXBuildFile; fileRef = B97EFA367E5F31CB0BEC38F6; };
 		EDFF3292CA3B92DE5A34FBB0 /* include_juce_dsp.mm */ = {isa = PBXBuildFile; fileRef = EA71581BA74F12FC15D77D37; };
@@ -70,6 +71,7 @@
 		05E03507C2E6F497F415BDEC /* juce_audio_plugin_client */ /* juce_audio_plugin_client */ = {isa = PBXFileReference; lastKnownFileType = folder; name = juce_audio_plugin_client; path = /Users/land00m/Documents/GitHub/JUCE/modules/juce_audio_plugin_client; sourceTree = "<absolute>"; };
 		0D990EFF97355EFC8458EA62 /* Info-VST3.plist */ /* Info-VST3.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; name = "Info-VST3.plist"; path = "Info-VST3.plist"; sourceTree = SOURCE_ROOT; };
 		1460F55D878F6DC62D867C60 /* Info-Standalone_Plugin.plist */ /* Info-Standalone_Plugin.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; name = "Info-Standalone_Plugin.plist"; path = "Info-Standalone_Plugin.plist"; sourceTree = SOURCE_ROOT; };
+		16DE79417D8C3070802B036D /* viator_modules */ /* viator_modules */ = {isa = PBXFileReference; lastKnownFileType = folder; name = viator_modules; path = ../../../../viatordsp/viator_modules; sourceTree = SOURCE_ROOT; };
 		18E8BEDE535E18E2F00CF144 /* include_juce_audio_plugin_client_VST3.cpp */ /* include_juce_audio_plugin_client_VST3.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = include_juce_audio_plugin_client_VST3.cpp; path = ../../JuceLibraryCode/include_juce_audio_plugin_client_VST3.cpp; sourceTree = SOURCE_ROOT; };
 		1B6BC233F493FC338C40EF42 /* Carbon.framework */ /* Carbon.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Carbon.framework; path = System/Library/Frameworks/Carbon.framework; sourceTree = SDKROOT; };
 		1B6E8ED0C0BCC88119F2E64C /* juce_graphics */ /* juce_graphics */ = {isa = PBXFileReference; lastKnownFileType = folder; name = juce_graphics; path = /Users/land00m/Documents/GitHub/JUCE/modules/juce_graphics; sourceTree = "<absolute>"; };
@@ -95,6 +97,7 @@
 		7D0702E563BB2B3EA336FE86 /* Standalone Plugin */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = exciter.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		8658F07ABADE171A8627B090 /* include_juce_audio_utils.mm */ /* include_juce_audio_utils.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; name = include_juce_audio_utils.mm; path = ../../JuceLibraryCode/include_juce_audio_utils.mm; sourceTree = SOURCE_ROOT; };
 		86B77F6CA2BA49F97E3D5839 /* include_juce_gui_basics.mm */ /* include_juce_gui_basics.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; name = include_juce_gui_basics.mm; path = ../../JuceLibraryCode/include_juce_gui_basics.mm; sourceTree = SOURCE_ROOT; };
+		87235B7299096CB91DC1A9C1 /* include_viator_modules.cpp */ /* include_viator_modules.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = include_viator_modules.cpp; path = ../../JuceLibraryCode/include_viator_modules.cpp; sourceTree = SOURCE_ROOT; };
 		92A9F2E03887F2AB30495F85 /* juce_dsp */ /* juce_dsp */ = {isa = PBXFileReference; lastKnownFileType = folder; name = juce_dsp; path = /Users/land00m/Documents/GitHub/JUCE/modules/juce_dsp; sourceTree = "<absolute>"; };
 		934B404178465582031BF87B /* include_juce_audio_plugin_client_Standalone.cpp */ /* include_juce_audio_plugin_client_Standalone.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = include_juce_audio_plugin_client_Standalone.cpp; path = ../../JuceLibraryCode/include_juce_audio_plugin_client_Standalone.cpp; sourceTree = SOURCE_ROOT; };
 		9670A6CE00786BB47C317428 /* include_juce_data_structures.mm */ /* include_juce_data_structures.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; name = include_juce_data_structures.mm; path = ../../JuceLibraryCode/include_juce_data_structures.mm; sourceTree = SOURCE_ROOT; };
@@ -222,6 +225,7 @@
 				BB0C8C49B7A1A2DB34B4C81E,
 				86B77F6CA2BA49F97E3D5839,
 				C32F5573285F17CE2C24F05A,
+				87235B7299096CB91DC1A9C1,
 				9E74B80316F20A5CA1606C02,
 				68D9EC63AC0987D48A6B6F85,
 			);
@@ -287,6 +291,7 @@
 				1B6E8ED0C0BCC88119F2E64C,
 				D80F51C4A07DBD6ECE576A9F,
 				1E481C2090B4CB91414F702C,
+				16DE79417D8C3070802B036D,
 			);
 			name = "JUCE Modules";
 			sourceTree = "<group>";
@@ -592,6 +597,7 @@
 				DE4AC7D5DD18B6D3EA7803BF,
 				AC37217723679F7A8DC93F6D,
 				7FD1724227B34138E1BA0931,
+				E449523A66B0688325CDE9A1,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -685,6 +691,7 @@
 					"JUCE_MODULE_AVAILABLE_juce_graphics=1",
 					"JUCE_MODULE_AVAILABLE_juce_gui_basics=1",
 					"JUCE_MODULE_AVAILABLE_juce_gui_extra=1",
+					"JUCE_MODULE_AVAILABLE_viator_modules=1",
 					"JUCE_GLOBAL_MODULE_SETTINGS_INCLUDED=1",
 					"JUCE_VST3_CAN_REPLACE_VST2=0",
 					"JUCE_STRICT_REFCOUNTEDPOINTER=1",
@@ -747,13 +754,14 @@
 					"/Users/land00m/Documents/GitHub/JUCE/modules/juce_audio_processors/format_types/VST3_SDK",
 					"$(SRCROOT)/../../JuceLibraryCode",
 					"/Users/land00m/Documents/GitHub/JUCE/modules",
+					"$(SRCROOT)/../../../../viatordsp",
 					"/Users/land00m/Documents/GitHub/JUCE/modules/juce_audio_plugin_client",
 					"$(inherited)",
 				);
 				INFOPLIST_FILE = Info-Standalone_Plugin.plist;
 				INFOPLIST_PREPROCESS = NO;
 				MACOSX_DEPLOYMENT_TARGET = 10.11;
-				MTL_HEADER_SEARCH_PATHS = "/Users/land00m/Documents/GitHub/JUCE/modules/juce_audio_processors/format_types/VST3_SDK $(SRCROOT)/../../JuceLibraryCode /Users/land00m/Documents/GitHub/JUCE/modules /Users/land00m/Documents/GitHub/JUCE/modules/juce_audio_plugin_client";
+				MTL_HEADER_SEARCH_PATHS = "/Users/land00m/Documents/GitHub/JUCE/modules/juce_audio_processors/format_types/VST3_SDK $(SRCROOT)/../../JuceLibraryCode /Users/land00m/Documents/GitHub/JUCE/modules $(SRCROOT)/../../../../viatordsp /Users/land00m/Documents/GitHub/JUCE/modules/juce_audio_plugin_client";
 				OTHER_LDFLAGS = "-lexciter";
 				PRODUCT_BUNDLE_IDENTIFIER = com.ViatorDSP.Stimulate;
 				PRODUCT_NAME = "exciter";
@@ -793,6 +801,7 @@
 					"JUCE_MODULE_AVAILABLE_juce_graphics=1",
 					"JUCE_MODULE_AVAILABLE_juce_gui_basics=1",
 					"JUCE_MODULE_AVAILABLE_juce_gui_extra=1",
+					"JUCE_MODULE_AVAILABLE_viator_modules=1",
 					"JUCE_GLOBAL_MODULE_SETTINGS_INCLUDED=1",
 					"JUCE_VST3_CAN_REPLACE_VST2=0",
 					"JUCE_STRICT_REFCOUNTEDPOINTER=1",
@@ -856,12 +865,13 @@
 					"/Users/land00m/Documents/GitHub/JUCE/modules/juce_audio_processors/format_types/VST3_SDK",
 					"$(SRCROOT)/../../JuceLibraryCode",
 					"/Users/land00m/Documents/GitHub/JUCE/modules",
+					"$(SRCROOT)/../../../../viatordsp",
 					"/Users/land00m/Documents/GitHub/JUCE/modules/juce_audio_plugin_client",
 					"$(inherited)",
 				);
 				INSTALL_PATH = "@executable_path/../Frameworks";
 				MACOSX_DEPLOYMENT_TARGET = 10.11;
-				MTL_HEADER_SEARCH_PATHS = "/Users/land00m/Documents/GitHub/JUCE/modules/juce_audio_processors/format_types/VST3_SDK $(SRCROOT)/../../JuceLibraryCode /Users/land00m/Documents/GitHub/JUCE/modules /Users/land00m/Documents/GitHub/JUCE/modules/juce_audio_plugin_client";
+				MTL_HEADER_SEARCH_PATHS = "/Users/land00m/Documents/GitHub/JUCE/modules/juce_audio_processors/format_types/VST3_SDK $(SRCROOT)/../../JuceLibraryCode /Users/land00m/Documents/GitHub/JUCE/modules $(SRCROOT)/../../../../viatordsp /Users/land00m/Documents/GitHub/JUCE/modules/juce_audio_plugin_client";
 				PRODUCT_BUNDLE_IDENTIFIER = com.ViatorDSP.Stimulate;
 				PRODUCT_NAME = "exciter";
 				SKIP_INSTALL = YES;
@@ -903,6 +913,7 @@
 					"JUCE_MODULE_AVAILABLE_juce_graphics=1",
 					"JUCE_MODULE_AVAILABLE_juce_gui_basics=1",
 					"JUCE_MODULE_AVAILABLE_juce_gui_extra=1",
+					"JUCE_MODULE_AVAILABLE_viator_modules=1",
 					"JUCE_GLOBAL_MODULE_SETTINGS_INCLUDED=1",
 					"JUCE_VST3_CAN_REPLACE_VST2=0",
 					"JUCE_STRICT_REFCOUNTEDPOINTER=1",
@@ -966,6 +977,7 @@
 					"/Users/land00m/Documents/GitHub/JUCE/modules/juce_audio_processors/format_types/VST3_SDK",
 					"$(SRCROOT)/../../JuceLibraryCode",
 					"/Users/land00m/Documents/GitHub/JUCE/modules",
+					"$(SRCROOT)/../../../../viatordsp",
 					"/Users/land00m/Documents/GitHub/JUCE/modules/juce_audio_plugin_client",
 					"$(inherited)",
 				);
@@ -974,7 +986,7 @@
 				INSTALL_PATH = "$(HOME)/Library/Audio/Plug-Ins/VST3/";
 				LIBRARY_STYLE = Bundle;
 				MACOSX_DEPLOYMENT_TARGET = 10.11;
-				MTL_HEADER_SEARCH_PATHS = "/Users/land00m/Documents/GitHub/JUCE/modules/juce_audio_processors/format_types/VST3_SDK $(SRCROOT)/../../JuceLibraryCode /Users/land00m/Documents/GitHub/JUCE/modules /Users/land00m/Documents/GitHub/JUCE/modules/juce_audio_plugin_client";
+				MTL_HEADER_SEARCH_PATHS = "/Users/land00m/Documents/GitHub/JUCE/modules/juce_audio_processors/format_types/VST3_SDK $(SRCROOT)/../../JuceLibraryCode /Users/land00m/Documents/GitHub/JUCE/modules $(SRCROOT)/../../../../viatordsp /Users/land00m/Documents/GitHub/JUCE/modules/juce_audio_plugin_client";
 				OTHER_LDFLAGS = "-bundle -lexciter";
 				PRODUCT_BUNDLE_IDENTIFIER = com.ViatorDSP.Stimulate;
 				PRODUCT_NAME = "exciter";
@@ -1017,6 +1029,7 @@
 					"JUCE_MODULE_AVAILABLE_juce_graphics=1",
 					"JUCE_MODULE_AVAILABLE_juce_gui_basics=1",
 					"JUCE_MODULE_AVAILABLE_juce_gui_extra=1",
+					"JUCE_MODULE_AVAILABLE_viator_modules=1",
 					"JUCE_GLOBAL_MODULE_SETTINGS_INCLUDED=1",
 					"JUCE_VST3_CAN_REPLACE_VST2=0",
 					"JUCE_STRICT_REFCOUNTEDPOINTER=1",
@@ -1080,6 +1093,7 @@
 					"/Users/land00m/Documents/GitHub/JUCE/modules/juce_audio_processors/format_types/VST3_SDK",
 					"$(SRCROOT)/../../JuceLibraryCode",
 					"/Users/land00m/Documents/GitHub/JUCE/modules",
+					"$(SRCROOT)/../../../../viatordsp",
 					"/Users/land00m/Documents/GitHub/JUCE/modules/juce_audio_plugin_client",
 					"$(inherited)",
 				);
@@ -1088,7 +1102,7 @@
 				INSTALL_PATH = "$(HOME)/Library/Audio/Plug-Ins/Components/";
 				LIBRARY_STYLE = Bundle;
 				MACOSX_DEPLOYMENT_TARGET = 10.11;
-				MTL_HEADER_SEARCH_PATHS = "/Users/land00m/Documents/GitHub/JUCE/modules/juce_audio_processors/format_types/VST3_SDK $(SRCROOT)/../../JuceLibraryCode /Users/land00m/Documents/GitHub/JUCE/modules /Users/land00m/Documents/GitHub/JUCE/modules/juce_audio_plugin_client";
+				MTL_HEADER_SEARCH_PATHS = "/Users/land00m/Documents/GitHub/JUCE/modules/juce_audio_processors/format_types/VST3_SDK $(SRCROOT)/../../JuceLibraryCode /Users/land00m/Documents/GitHub/JUCE/modules $(SRCROOT)/../../../../viatordsp /Users/land00m/Documents/GitHub/JUCE/modules/juce_audio_plugin_client";
 				OTHER_LDFLAGS = "-bundle -lexciter";
 				OTHER_REZFLAGS = "-d ppc_$ppc -d i386_$i386 -d ppc64_$ppc64 -d x86_64_$x86_64 -d arm64_$arm64 -I /System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Versions/A/Headers -I \"$(DEVELOPER_DIR)/Extras/CoreAudio/AudioUnits/AUPublic/AUBase\" -I \"$(DEVELOPER_DIR)/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/System/Library/Frameworks/AudioUnit.framework/Headers\"";
 				PRODUCT_BUNDLE_IDENTIFIER = com.ViatorDSP.Stimulate;
@@ -1132,6 +1146,7 @@
 					"JUCE_MODULE_AVAILABLE_juce_graphics=1",
 					"JUCE_MODULE_AVAILABLE_juce_gui_basics=1",
 					"JUCE_MODULE_AVAILABLE_juce_gui_extra=1",
+					"JUCE_MODULE_AVAILABLE_viator_modules=1",
 					"JUCE_GLOBAL_MODULE_SETTINGS_INCLUDED=1",
 					"JUCE_VST3_CAN_REPLACE_VST2=0",
 					"JUCE_STRICT_REFCOUNTEDPOINTER=1",
@@ -1195,6 +1210,7 @@
 					"/Users/land00m/Documents/GitHub/JUCE/modules/juce_audio_processors/format_types/VST3_SDK",
 					"$(SRCROOT)/../../JuceLibraryCode",
 					"/Users/land00m/Documents/GitHub/JUCE/modules",
+					"$(SRCROOT)/../../../../viatordsp",
 					"/Users/land00m/Documents/GitHub/JUCE/modules/juce_audio_plugin_client",
 					"$(inherited)",
 				);
@@ -1204,7 +1220,7 @@
 				LIBRARY_STYLE = Bundle;
 				LLVM_LTO = YES;
 				MACOSX_DEPLOYMENT_TARGET = 10.11;
-				MTL_HEADER_SEARCH_PATHS = "/Users/land00m/Documents/GitHub/JUCE/modules/juce_audio_processors/format_types/VST3_SDK $(SRCROOT)/../../JuceLibraryCode /Users/land00m/Documents/GitHub/JUCE/modules /Users/land00m/Documents/GitHub/JUCE/modules/juce_audio_plugin_client";
+				MTL_HEADER_SEARCH_PATHS = "/Users/land00m/Documents/GitHub/JUCE/modules/juce_audio_processors/format_types/VST3_SDK $(SRCROOT)/../../JuceLibraryCode /Users/land00m/Documents/GitHub/JUCE/modules $(SRCROOT)/../../../../viatordsp /Users/land00m/Documents/GitHub/JUCE/modules/juce_audio_plugin_client";
 				OTHER_LDFLAGS = "-bundle -lexciter";
 				PRODUCT_BUNDLE_IDENTIFIER = com.ViatorDSP.Stimulate;
 				PRODUCT_NAME = "exciter";
@@ -1294,6 +1310,7 @@
 					"JUCE_MODULE_AVAILABLE_juce_graphics=1",
 					"JUCE_MODULE_AVAILABLE_juce_gui_basics=1",
 					"JUCE_MODULE_AVAILABLE_juce_gui_extra=1",
+					"JUCE_MODULE_AVAILABLE_viator_modules=1",
 					"JUCE_GLOBAL_MODULE_SETTINGS_INCLUDED=1",
 					"JUCE_VST3_CAN_REPLACE_VST2=0",
 					"JUCE_STRICT_REFCOUNTEDPOINTER=1",
@@ -1356,6 +1373,7 @@
 					"/Users/land00m/Documents/GitHub/JUCE/modules/juce_audio_processors/format_types/VST3_SDK",
 					"$(SRCROOT)/../../JuceLibraryCode",
 					"/Users/land00m/Documents/GitHub/JUCE/modules",
+					"$(SRCROOT)/../../../../viatordsp",
 					"/Users/land00m/Documents/GitHub/JUCE/modules/juce_audio_plugin_client",
 					"$(inherited)",
 				);
@@ -1363,7 +1381,7 @@
 				INFOPLIST_PREPROCESS = NO;
 				LLVM_LTO = YES;
 				MACOSX_DEPLOYMENT_TARGET = 10.11;
-				MTL_HEADER_SEARCH_PATHS = "/Users/land00m/Documents/GitHub/JUCE/modules/juce_audio_processors/format_types/VST3_SDK $(SRCROOT)/../../JuceLibraryCode /Users/land00m/Documents/GitHub/JUCE/modules /Users/land00m/Documents/GitHub/JUCE/modules/juce_audio_plugin_client";
+				MTL_HEADER_SEARCH_PATHS = "/Users/land00m/Documents/GitHub/JUCE/modules/juce_audio_processors/format_types/VST3_SDK $(SRCROOT)/../../JuceLibraryCode /Users/land00m/Documents/GitHub/JUCE/modules $(SRCROOT)/../../../../viatordsp /Users/land00m/Documents/GitHub/JUCE/modules/juce_audio_plugin_client";
 				OTHER_LDFLAGS = "-lexciter";
 				PRODUCT_BUNDLE_IDENTIFIER = com.ViatorDSP.Stimulate;
 				PRODUCT_NAME = "exciter";
@@ -1459,6 +1477,7 @@
 					"JUCE_MODULE_AVAILABLE_juce_graphics=1",
 					"JUCE_MODULE_AVAILABLE_juce_gui_basics=1",
 					"JUCE_MODULE_AVAILABLE_juce_gui_extra=1",
+					"JUCE_MODULE_AVAILABLE_viator_modules=1",
 					"JUCE_GLOBAL_MODULE_SETTINGS_INCLUDED=1",
 					"JUCE_VST3_CAN_REPLACE_VST2=0",
 					"JUCE_STRICT_REFCOUNTEDPOINTER=1",
@@ -1522,13 +1541,14 @@
 					"/Users/land00m/Documents/GitHub/JUCE/modules/juce_audio_processors/format_types/VST3_SDK",
 					"$(SRCROOT)/../../JuceLibraryCode",
 					"/Users/land00m/Documents/GitHub/JUCE/modules",
+					"$(SRCROOT)/../../../../viatordsp",
 					"/Users/land00m/Documents/GitHub/JUCE/modules/juce_audio_plugin_client",
 					"$(inherited)",
 				);
 				INSTALL_PATH = "@executable_path/../Frameworks";
 				LLVM_LTO = YES;
 				MACOSX_DEPLOYMENT_TARGET = 10.11;
-				MTL_HEADER_SEARCH_PATHS = "/Users/land00m/Documents/GitHub/JUCE/modules/juce_audio_processors/format_types/VST3_SDK $(SRCROOT)/../../JuceLibraryCode /Users/land00m/Documents/GitHub/JUCE/modules /Users/land00m/Documents/GitHub/JUCE/modules/juce_audio_plugin_client";
+				MTL_HEADER_SEARCH_PATHS = "/Users/land00m/Documents/GitHub/JUCE/modules/juce_audio_processors/format_types/VST3_SDK $(SRCROOT)/../../JuceLibraryCode /Users/land00m/Documents/GitHub/JUCE/modules $(SRCROOT)/../../../../viatordsp /Users/land00m/Documents/GitHub/JUCE/modules/juce_audio_plugin_client";
 				PRODUCT_BUNDLE_IDENTIFIER = com.ViatorDSP.Stimulate;
 				PRODUCT_NAME = "exciter";
 				SKIP_INSTALL = YES;
@@ -1570,6 +1590,7 @@
 					"JUCE_MODULE_AVAILABLE_juce_graphics=1",
 					"JUCE_MODULE_AVAILABLE_juce_gui_basics=1",
 					"JUCE_MODULE_AVAILABLE_juce_gui_extra=1",
+					"JUCE_MODULE_AVAILABLE_viator_modules=1",
 					"JUCE_GLOBAL_MODULE_SETTINGS_INCLUDED=1",
 					"JUCE_VST3_CAN_REPLACE_VST2=0",
 					"JUCE_STRICT_REFCOUNTEDPOINTER=1",
@@ -1633,6 +1654,7 @@
 					"/Users/land00m/Documents/GitHub/JUCE/modules/juce_audio_processors/format_types/VST3_SDK",
 					"$(SRCROOT)/../../JuceLibraryCode",
 					"/Users/land00m/Documents/GitHub/JUCE/modules",
+					"$(SRCROOT)/../../../../viatordsp",
 					"/Users/land00m/Documents/GitHub/JUCE/modules/juce_audio_plugin_client",
 					"$(inherited)",
 				);
@@ -1642,7 +1664,7 @@
 				LIBRARY_STYLE = Bundle;
 				LLVM_LTO = YES;
 				MACOSX_DEPLOYMENT_TARGET = 10.11;
-				MTL_HEADER_SEARCH_PATHS = "/Users/land00m/Documents/GitHub/JUCE/modules/juce_audio_processors/format_types/VST3_SDK $(SRCROOT)/../../JuceLibraryCode /Users/land00m/Documents/GitHub/JUCE/modules /Users/land00m/Documents/GitHub/JUCE/modules/juce_audio_plugin_client";
+				MTL_HEADER_SEARCH_PATHS = "/Users/land00m/Documents/GitHub/JUCE/modules/juce_audio_processors/format_types/VST3_SDK $(SRCROOT)/../../JuceLibraryCode /Users/land00m/Documents/GitHub/JUCE/modules $(SRCROOT)/../../../../viatordsp /Users/land00m/Documents/GitHub/JUCE/modules/juce_audio_plugin_client";
 				OTHER_LDFLAGS = "-bundle -lexciter";
 				OTHER_REZFLAGS = "-d ppc_$ppc -d i386_$i386 -d ppc64_$ppc64 -d x86_64_$x86_64 -d arm64_$arm64 -I /System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Versions/A/Headers -I \"$(DEVELOPER_DIR)/Extras/CoreAudio/AudioUnits/AUPublic/AUBase\" -I \"$(DEVELOPER_DIR)/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/System/Library/Frameworks/AudioUnit.framework/Headers\"";
 				PRODUCT_BUNDLE_IDENTIFIER = com.ViatorDSP.Stimulate;
