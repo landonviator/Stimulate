@@ -19,13 +19,67 @@ ExciterAudioProcessor::ExciterAudioProcessor()
                       #endif
                        .withOutput ("Output", juce::AudioChannelSet::stereo(), true)
                      #endif
-                       )
+                       ),
+treeState (*this, nullptr, "PARAMETER", createParameterLayout())
 #endif
 {
+    treeState.addParameterListener ("input", this);
+    treeState.addParameterListener ("range", this);
+    treeState.addParameterListener ("oddeven", this);
+    treeState.addParameterListener ("mix", this);
 }
 
 ExciterAudioProcessor::~ExciterAudioProcessor()
 {
+    treeState.removeParameterListener ("input", this);
+    treeState.removeParameterListener ("range", this);
+    treeState.removeParameterListener ("oddeven", this);
+    treeState.removeParameterListener ("mix", this);
+}
+
+juce::AudioProcessorValueTreeState::ParameterLayout ExciterAudioProcessor::createParameterLayout()
+{
+  std::vector <std::unique_ptr<juce::RangedAudioParameter>> params;
+    
+  juce::StringArray models = {"Odd", "Even", "Tape", "Transformer"};
+
+  // Make sure to update the number of reservations after adding params
+  auto pInput = std::make_unique<juce::AudioParameterFloat>("input", "Input", 0.0, 20.0, 0.0);
+  auto pRange = std::make_unique<juce::AudioParameterFloat>("range", "Range", juce::NormalisableRange<float>(1000.0, 20000.0, 1.0, 0.3), 15000.0);
+  auto pOddEven = std::make_unique<juce::AudioParameterFloat>("oddeven", "Odd-Even", 0.0, 1.0, 0.5);
+  auto pMix = std::make_unique<juce::AudioParameterFloat>("mix", "Mix", 0.0, 1.0, 0.0);
+  
+  params.push_back(std::move(pInput));
+  params.push_back(std::move(pRange));
+  params.push_back(std::move(pOddEven));
+  params.push_back(std::move(pMix));
+
+  return { params.begin(), params.end() };
+}
+
+void ExciterAudioProcessor::parameterChanged(const juce::String &parameterID, float newValue)
+{
+    if (parameterID == "input")
+    {
+        rawGain = viator_utils::utils::dbToGain(newValue);
+    }
+    
+    if (parameterID == "range")
+    {
+        cutoff = newValue;
+        topBandFilter.setCutoffFrequency(cutoff);
+        bottomBandFilter.setCutoffFrequency(cutoff);
+    }
+    
+    if (parameterID == "oddeven")
+    {
+        oddEvenMix = newValue;
+    }
+    
+    if (parameterID == "mix")
+    {
+        mix = newValue;
+    }
 }
 
 //==============================================================================
@@ -93,8 +147,18 @@ void ExciterAudioProcessor::changeProgramName (int index, const juce::String& ne
 //==============================================================================
 void ExciterAudioProcessor::prepareToPlay (double sampleRate, int samplesPerBlock)
 {
-    // Use this method as the place to do any pre-playback
-    // initialisation that you need..
+    juce::dsp::ProcessSpec spec;
+    spec.sampleRate = sampleRate;
+    spec.maximumBlockSize = samplesPerBlock;
+    spec.numChannels = getTotalNumInputChannels();
+    
+    topBandFilter.prepare(spec);
+    topBandFilter.setType(juce::dsp::LinkwitzRileyFilterType::highpass);
+    topBandFilter.setCutoffFrequency(treeState.getRawParameterValue("range")->load());
+    
+    bottomBandFilter.prepare(spec);
+    bottomBandFilter.setType(juce::dsp::LinkwitzRileyFilterType::lowpass);
+    bottomBandFilter.setCutoffFrequency(treeState.getRawParameterValue("range")->load());
 }
 
 void ExciterAudioProcessor::releaseResources()
@@ -132,29 +196,32 @@ bool ExciterAudioProcessor::isBusesLayoutSupported (const BusesLayout& layouts) 
 void ExciterAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::MidiBuffer& midiMessages)
 {
     juce::ScopedNoDenormals noDenormals;
-    auto totalNumInputChannels  = getTotalNumInputChannels();
-    auto totalNumOutputChannels = getTotalNumOutputChannels();
 
-    // In case we have more outputs than inputs, this code clears any output
-    // channels that didn't contain input data, (because these aren't
-    // guaranteed to be empty - they may contain garbage).
-    // This is here to avoid people getting screaming feedback
-    // when they first compile a plugin, but obviously you don't need to keep
-    // this code if your algorithm always overwrites all the output channels.
-    for (auto i = totalNumInputChannels; i < totalNumOutputChannels; ++i)
-        buffer.clear (i, 0, buffer.getNumSamples());
-
-    // This is the place where you'd normally do the guts of your plugin's
-    // audio processing...
-    // Make sure to reset the state if your inner loop is processing
-    // the samples and the outer loop is handling the channels.
-    // Alternatively, you can process the samples with the channels
-    // interleaved by keeping the same state.
-    for (int channel = 0; channel < totalNumInputChannels; ++channel)
+    juce::dsp::AudioBlock<float> block (buffer);
+    
+    for (int sample = 0; sample < block.getNumSamples(); ++sample)
     {
-        auto* channelData = buffer.getWritePointer (channel);
-
-        // ..do something to the data...
+        for (int ch = 0; ch < block.getNumChannels(); ++ch)
+        {
+            float* data = block.getChannelPointer(ch);
+            
+            // Input
+            const float input = data[sample];
+            
+            // Separate bands
+            float topBandSignal = topBandFilter.processSample(ch, input);
+            float bottomBandSignal = bottomBandFilter.processSample(ch, input);
+            
+            // Distortion
+            float odd = std::atan(topBandSignal * rawGain);
+            float even = topBandSignal * rawGain + std::pow(topBandSignal * rawGain, 4);
+            
+            // Mix the odd even distortion
+            const auto outputSignal = bottomBandSignal + ((1.0 - oddEvenMix) * odd + even * oddEvenMix);
+            
+            // Output
+            data[sample] = (1.0 - mix) * (topBandSignal + bottomBandSignal) + outputSignal * mix;
+        }
     }
 }
 
@@ -166,7 +233,8 @@ bool ExciterAudioProcessor::hasEditor() const
 
 juce::AudioProcessorEditor* ExciterAudioProcessor::createEditor()
 {
-    return new ExciterAudioProcessorEditor (*this);
+    //return new ExciterAudioProcessorEditor (*this);
+    return new juce::GenericAudioProcessorEditor (*this);
 }
 
 //==============================================================================

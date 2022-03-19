@@ -14,6 +14,8 @@
 /**
 */
 class ExciterAudioProcessor  : public juce::AudioProcessor
+,
+public juce::AudioProcessorValueTreeState::Listener
 {
 public:
     //==============================================================================
@@ -52,8 +54,25 @@ public:
     //==============================================================================
     void getStateInformation (juce::MemoryBlock& destData) override;
     void setStateInformation (const void* data, int sizeInBytes) override;
+    
+    /** Value Trees =====================================================*/
+    juce::AudioProcessorValueTreeState treeState;
+    
 
 private:
+    
+    /** Parameters ======================================================*/
+    juce::AudioProcessorValueTreeState::ParameterLayout createParameterLayout();
+    void parameterChanged (const juce::String& parameterID, float newValue) override;
+    
+    float rawGain {1.0};
+    float mix {0.0};
+    float oddEvenMix {0.5};
+    float cutoff {15000};
+    
+    juce::dsp::LinkwitzRileyFilter<float> topBandFilter;
+    juce::dsp::LinkwitzRileyFilter<float> bottomBandFilter;
+    
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (ExciterAudioProcessor)
 };
