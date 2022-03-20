@@ -47,8 +47,8 @@ juce::AudioProcessorValueTreeState::ParameterLayout ExciterAudioProcessor::creat
   juce::StringArray models = {"Odd", "Even", "Tape", "Transformer"};
 
   // Make sure to update the number of reservations after adding params
-  auto pOS = std::make_unique<juce::AudioParameterBool>("os", "OS", false);
-  auto pInput = std::make_unique<juce::AudioParameterFloat>("input", "Input", 0.0, 20.0, 0.0);
+  auto pOS = std::make_unique<juce::AudioParameterInt>("os", "OS", 0, 1, 0);
+  auto pInput = std::make_unique<juce::AudioParameterFloat>("input", "Input", 0.0, 10.0, 0.0);
   auto pRange = std::make_unique<juce::AudioParameterFloat>("range", "Range", juce::NormalisableRange<float>(1000.0, 20000.0, 1.0, 0.3), 15000.0);
   auto pOddEven = std::make_unique<juce::AudioParameterFloat>("oddeven", "Odd-Even", 0.0, 1.0, 0.5);
   auto pMix = std::make_unique<juce::AudioParameterFloat>("mix", "Mix", 0.0, 1.0, 0.0);
@@ -67,6 +67,21 @@ void ExciterAudioProcessor::parameterChanged(const juce::String &parameterID, fl
     if (parameterID == "os")
     {
         osToggle = newValue;
+        
+        // Adjust samplerate of filters when oversampling
+        if (osToggle)
+        {
+            spec.sampleRate = getSampleRate() * oversamplingModel.getOversamplingFactor();
+            topBandFilter.prepare(spec);
+            bottomBandFilter.prepare(spec);
+        }
+        
+        else
+        {
+            spec.sampleRate = getSampleRate();
+            topBandFilter.prepare(spec);
+            bottomBandFilter.prepare(spec);
+        }
     }
     
     if (parameterID == "input")
@@ -157,33 +172,46 @@ void ExciterAudioProcessor::changeProgramName (int index, const juce::String& ne
 //==============================================================================
 void ExciterAudioProcessor::prepareToPlay (double sampleRate, int samplesPerBlock)
 {
-    juce::dsp::ProcessSpec spec;
-    spec.sampleRate = sampleRate;
+    osToggle = *treeState.getRawParameterValue("os");
+    
+    // Spec
+    if (osToggle)
+    {
+        spec.sampleRate = sampleRate * oversamplingModel.getOversamplingFactor();
+    }
+    
+    else
+    {
+        spec.sampleRate = sampleRate;
+    }
+    
     spec.maximumBlockSize = samplesPerBlock;
     spec.numChannels = getTotalNumInputChannels();
     
+    // Top band filter
     topBandFilter.prepare(spec);
     topBandFilter.setType(juce::dsp::LinkwitzRileyFilterType::highpass);
     topBandFilter.setCutoffFrequency(treeState.getRawParameterValue("range")->load());
     
+    // Bottom band filter
     bottomBandFilter.prepare(spec);
     bottomBandFilter.setType(juce::dsp::LinkwitzRileyFilterType::lowpass);
     bottomBandFilter.setCutoffFrequency(treeState.getRawParameterValue("range")->load());
     
-    
+    // Oversampling
     oversamplingModel.initProcessing(samplesPerBlock);
+    oversamplingModel.reset();
     
+    // Member variables
     rawGain = viator_utils::utils::dbToGain(treeState.getRawParameterValue("input")->load());
     cutoff = treeState.getRawParameterValue("range")->load();
     mix = treeState.getRawParameterValue("mix")->load();
     oddEvenMix = treeState.getRawParameterValue("oddeven")->load();
-    //osToggle = *treeState.getRawParameterValue("os");
 }
 
 void ExciterAudioProcessor::releaseResources()
 {
-    // When playback stops, you can use this as an opportunity to free up any
-    // spare memory, etc.
+    oversamplingModel.reset();
 }
 
 #ifndef JucePlugin_PreferredChannelConfigurations
@@ -222,19 +250,12 @@ void ExciterAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce
     if (osToggle)
     {
         upSampledBlock = oversamplingModel.processSamplesUp(block);
-        
-        /** TO DO*/
-        // Adjust samplerate
-        
         stimulationBlock(upSampledBlock);
         oversamplingModel.processSamplesDown(block);
     }
     
     else
     {
-        /** TO DO*/
-        // Adjust samplerate
-        
         stimulationBlock(block);
     }
 }
@@ -282,15 +303,22 @@ juce::AudioProcessorEditor* ExciterAudioProcessor::createEditor()
 //==============================================================================
 void ExciterAudioProcessor::getStateInformation (juce::MemoryBlock& destData)
 {
-    // You should use this method to store your parameters in the memory block.
-    // You could do that either as raw data, or use the XML or ValueTree classes
-    // as intermediaries to make it easy to save and load complex data.
+    // Save params
+    treeState.state.appendChild(variableTree, nullptr);
+    juce::MemoryOutputStream stream(destData, false);
+    treeState.state.writeToStream (stream);
 }
 
 void ExciterAudioProcessor::setStateInformation (const void* data, int sizeInBytes)
 {
-    // You should use this method to restore your parameters from this memory block,
-    // whose contents will have been created by the getStateInformation() call.
+    // Recall params
+    auto tree = juce::ValueTree::readFromData (data, size_t(sizeInBytes));
+    variableTree = tree.getChildWithName("Variables");
+    
+    if (tree.isValid())
+    {
+        treeState.state = tree;
+    }
 }
 
 //==============================================================================

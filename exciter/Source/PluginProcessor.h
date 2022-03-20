@@ -57,6 +57,21 @@ public:
     
     /** Value Trees =====================================================*/
     juce::AudioProcessorValueTreeState treeState;
+    juce::ValueTree variableTree
+    { "Variables", {},
+      {
+        { "Group", {{ "name", "Vars" }},
+          {
+              { "Parameter", {{ "id", "width" }, { "value", 0.0 }}},
+                { "Parameter", {{ "id", "height" }, { "value", 0.0 }}},
+          }
+        }
+      }
+    };
+    
+    /** Window Vars =====================================================*/
+    float windowWidth {0.0f};
+    float windowHeight {0.0f};
     
 
 private:
@@ -65,11 +80,13 @@ private:
     juce::AudioProcessorValueTreeState::ParameterLayout createParameterLayout();
     void parameterChanged (const juce::String& parameterID, float newValue) override;
     
+    // Variables
     float rawGain {1.0};
     float mix {0.0};
     float oddEvenMix {0.5};
     float cutoff {15000};
     bool osToggle {false};
+    
     
     /** DSP */
     juce::dsp::LinkwitzRileyFilter<float> topBandFilter;
@@ -77,6 +94,8 @@ private:
     juce::dsp::Oversampling<float> oversamplingModel;
     
     void stimulationBlock(juce::dsp::AudioBlock<float> &currentBlock);
+    
+    juce::dsp::ProcessSpec spec;
     
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (ExciterAudioProcessor)
