@@ -247,16 +247,28 @@ void ExciterAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce
     juce::dsp::AudioBlock<float> block (buffer);
     juce::dsp::AudioBlock<float> upSampledBlock (buffer);
     
+    // Oversample if ON
     if (osToggle)
     {
         upSampledBlock = oversamplingModel.processSamplesUp(block);
-        stimulationBlock(upSampledBlock);
+        
+        // Don't process when the preamp is at 0 dB
+        if (rawGain != 1.0)
+        {
+            stimulationBlock(upSampledBlock);
+        }
+        
         oversamplingModel.processSamplesDown(block);
     }
     
+    // Don't Oversample if OFF
     else
     {
-        stimulationBlock(block);
+        // Don't process when the preamp is at 0 dB
+        if (rawGain != 1.0)
+        {
+            stimulationBlock(block);
+        }
     }
 }
 
@@ -275,13 +287,14 @@ void ExciterAudioProcessor::stimulationBlock(juce::dsp::AudioBlock<float> &curre
             float topBandSignal = topBandFilter.processSample(ch, input);
             float bottomBandSignal = bottomBandFilter.processSample(ch, input);
             
+            // This distortion is slow, so let's turn it off when the slider is at 0
             // Distortion
             float odd = std::atan(topBandSignal * rawGain);
             float even = topBandSignal * rawGain + std::pow(topBandSignal * rawGain, 4);
-            
+                
             // Mix the odd even distortion
             const auto outputSignal = bottomBandSignal + ((1.0 - oddEvenMix) * odd + even * oddEvenMix);
-            
+                
             // Output
             data[sample] = (1.0 - mix) * (topBandSignal + bottomBandSignal) + outputSignal * mix;
         }

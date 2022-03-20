@@ -87,7 +87,6 @@ private:
     float cutoff {15000};
     bool osToggle {false};
     
-    
     /** DSP */
     juce::dsp::LinkwitzRileyFilter<float> topBandFilter;
     juce::dsp::LinkwitzRileyFilter<float> bottomBandFilter;
