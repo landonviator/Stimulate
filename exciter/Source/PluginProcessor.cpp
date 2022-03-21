@@ -25,39 +25,49 @@ treeState (*this, nullptr, "PARAMETER", createParameterLayout())
 #endif
 {
     treeState.addParameterListener ("os", this);
+    treeState.addParameterListener ("phase", this);
     treeState.addParameterListener ("input", this);
     treeState.addParameterListener ("range", this);
-    treeState.addParameterListener ("oddeven", this);
+    treeState.addParameterListener ("odd", this);
+    treeState.addParameterListener ("even", this);
     treeState.addParameterListener ("mix", this);
+    treeState.addParameterListener ("trim", this);
 }
 
 ExciterAudioProcessor::~ExciterAudioProcessor()
 {
     treeState.removeParameterListener ("os", this);
+    treeState.removeParameterListener ("phase", this);
     treeState.removeParameterListener ("input", this);
     treeState.removeParameterListener ("range", this);
-    treeState.removeParameterListener ("oddeven", this);
+    treeState.removeParameterListener ("odd", this);
+    treeState.removeParameterListener ("even", this);
     treeState.removeParameterListener ("mix", this);
+    treeState.removeParameterListener ("trim", this);
 }
 
 juce::AudioProcessorValueTreeState::ParameterLayout ExciterAudioProcessor::createParameterLayout()
 {
   std::vector <std::unique_ptr<juce::RangedAudioParameter>> params;
     
-  juce::StringArray models = {"Odd", "Even", "Tape", "Transformer"};
-
   // Make sure to update the number of reservations after adding params
   auto pOS = std::make_unique<juce::AudioParameterInt>("os", "OS", 0, 1, 0);
+  auto pPhase = std::make_unique<juce::AudioParameterBool>("phase", "Phase", false);
   auto pInput = std::make_unique<juce::AudioParameterFloat>("input", "Input", 0.0, 10.0, 0.0);
   auto pRange = std::make_unique<juce::AudioParameterFloat>("range", "Range", juce::NormalisableRange<float>(1000.0, 20000.0, 1.0, 0.3), 15000.0);
-  auto pOddEven = std::make_unique<juce::AudioParameterFloat>("oddeven", "Odd-Even", 0.0, 1.0, 0.5);
+  auto pOdd = std::make_unique<juce::AudioParameterFloat>("odd", "Odd", 0.0, 1.0, 0.5);
+  auto pEven = std::make_unique<juce::AudioParameterFloat>("even", "Even", 0.0, 1.0, 0.5);
   auto pMix = std::make_unique<juce::AudioParameterFloat>("mix", "Mix", 0.0, 1.0, 0.0);
+  auto pTrim = std::make_unique<juce::AudioParameterFloat>("trim", "Trim", -24.0, 24.0, 0.0);
   
   params.push_back(std::move(pOS));
+  params.push_back(std::move(pPhase));
   params.push_back(std::move(pInput));
   params.push_back(std::move(pRange));
-  params.push_back(std::move(pOddEven));
+  params.push_back(std::move(pOdd));
+  params.push_back(std::move(pEven));
   params.push_back(std::move(pMix));
+  params.push_back(std::move(pTrim));
 
   return { params.begin(), params.end() };
 }
@@ -96,14 +106,29 @@ void ExciterAudioProcessor::parameterChanged(const juce::String &parameterID, fl
         bottomBandFilter.setCutoffFrequency(cutoff);
     }
     
-    if (parameterID == "oddeven")
+    if (parameterID == "odd")
     {
-        oddEvenMix = newValue;
+        oddMix = newValue;
+    }
+    
+    if (parameterID == "even")
+    {
+        evenMix = newValue;
     }
     
     if (parameterID == "mix")
     {
         mix = newValue;
+    }
+    
+    if (parameterID == "trim")
+    {
+        rawTrim = viator_utils::utils::dbToGain(newValue);
+    }
+    
+    if (parameterID == "phase")
+    {
+        totalPhase = static_cast<bool>(newValue);
     }
 }
 
@@ -206,7 +231,10 @@ void ExciterAudioProcessor::prepareToPlay (double sampleRate, int samplesPerBloc
     rawGain = viator_utils::utils::dbToGain(treeState.getRawParameterValue("input")->load());
     cutoff = treeState.getRawParameterValue("range")->load();
     mix = treeState.getRawParameterValue("mix")->load();
-    oddEvenMix = treeState.getRawParameterValue("oddeven")->load();
+    oddMix = treeState.getRawParameterValue("odd")->load();
+    evenMix = treeState.getRawParameterValue("even")->load();
+    rawTrim = viator_utils::utils::dbToGain(treeState.getRawParameterValue("trim")->load());
+    totalPhase = static_cast<bool>(treeState.getRawParameterValue("phase")->load());
 }
 
 void ExciterAudioProcessor::releaseResources()
@@ -251,24 +279,14 @@ void ExciterAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce
     if (osToggle)
     {
         upSampledBlock = oversamplingModel.processSamplesUp(block);
-        
-        // Don't process when the preamp is at 0 dB
-        if (rawGain != 1.0)
-        {
-            stimulationBlock(upSampledBlock);
-        }
-        
+        stimulationBlock(upSampledBlock);
         oversamplingModel.processSamplesDown(block);
     }
     
     // Don't Oversample if OFF
     else
     {
-        // Don't process when the preamp is at 0 dB
-        if (rawGain != 1.0)
-        {
-            stimulationBlock(block);
-        }
+        stimulationBlock(block);
     }
 }
 
@@ -287,18 +305,25 @@ void ExciterAudioProcessor::stimulationBlock(juce::dsp::AudioBlock<float> &curre
             float topBandSignal = topBandFilter.processSample(ch, input);
             float bottomBandSignal = bottomBandFilter.processSample(ch, input);
             
-            // This distortion is slow, so let's turn it off when the slider is at 0
             // Distortion
             float odd = std::atan(topBandSignal * rawGain);
             float even = topBandSignal * rawGain + std::pow(topBandSignal * rawGain, 4);
                 
             // Mix the odd even distortion
-            const auto outputSignal = bottomBandSignal + ((1.0 - oddEvenMix) * odd + even * oddEvenMix);
-                
+            const auto outputSignal = bottomBandSignal + (odd * oddMix + even * evenMix) * rawTrim;
+            
             // Output
-            data[sample] = (1.0 - mix) * (topBandSignal + bottomBandSignal) + outputSignal * mix;
+            data[sample] = ((1.0 - mix) * (topBandSignal + bottomBandSignal) + outputSignal * mix);
+            
+            // Apply phase to output
+            data[sample] *= getPhase(totalPhase);
         }
     }
+}
+
+int ExciterAudioProcessor::getPhase(bool currentPhaseParam)
+{
+    return !currentPhaseParam * 2.0 - 1.0;
 }
 
 //==============================================================================

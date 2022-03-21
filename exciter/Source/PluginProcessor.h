@@ -83,9 +83,15 @@ private:
     // Variables
     float rawGain {1.0};
     float mix {0.0};
-    float oddEvenMix {0.5};
+    float oddMix {0.5};
+    float evenMix {0.5};
     float cutoff {15000};
+    float rawTrim {1.0};
+    
     bool osToggle {false};
+    bool totalPhase {false};
+    
+    int getPhase(bool currentPhaseParam);
     
     /** DSP */
     juce::dsp::LinkwitzRileyFilter<float> topBandFilter;
