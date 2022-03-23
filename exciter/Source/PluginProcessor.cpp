@@ -362,6 +362,10 @@ void ExciterAudioProcessor::setStateInformation (const void* data, int sizeInByt
     if (tree.isValid())
     {
         treeState.state = tree;
+        
+        // Window Size
+        windowWidth = variableTree.getProperty("width");
+        windowHeight = variableTree.getProperty("height");
     }
 }
 
