@@ -12,10 +12,14 @@
 //==============================================================================
 ExciterAudioProcessorEditor::ExciterAudioProcessorEditor (ExciterAudioProcessor& p)
     : AudioProcessorEditor (&p), audioProcessor (p)
+, amountDial(" %", 0.0, 10.0, 0.01, 0.0)
+, rangeDial(" Hz", 1000.0, 20000.0, 1.0, 15000.0)
+, oddDial(" dB", 0.0, 1.0, 0.01, 0.0)
+, evenDial(" dB", 0.0, 1.0, 0.01, 0.0)
+, mixFader(" %", 0.0, 1.0, 0.01, 0.0)
+, trimFader(" dB", -24.0, 24.0, 0.01, 0.0)
 {
-    // Make sure that before the constructor has finished, you've set the
-    // editor's size to whatever you need it to be.
-    setSize (400, 300);
+    uiConstructor();
 }
 
 ExciterAudioProcessorEditor::~ExciterAudioProcessorEditor()
@@ -25,16 +29,10 @@ ExciterAudioProcessorEditor::~ExciterAudioProcessorEditor()
 //==============================================================================
 void ExciterAudioProcessorEditor::paint (juce::Graphics& g)
 {
-    // (Our component is opaque, so we must completely fill the background with a solid colour)
-    g.fillAll (getLookAndFeel().findColour (juce::ResizableWindow::backgroundColourId));
-
-    g.setColour (juce::Colours::white);
-    g.setFont (36.0f);
-    g.drawFittedText ("Stimulate", getLocalBounds(), juce::Justification::centred, 1);
+    uiPaint(g);
 }
 
 void ExciterAudioProcessorEditor::resized()
 {
-    // This is generally where you'll want to lay out the positions of any
-    // subcomponents in your editor..
+    uiResized(getWidth(), getHeight());
 }

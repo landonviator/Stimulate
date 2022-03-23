@@ -21,7 +21,7 @@ ExciterAudioProcessor::ExciterAudioProcessor()
                      #endif
                        ),
 treeState (*this, nullptr, "PARAMETER", createParameterLayout())
-, oversamplingModel(2, 3, juce::dsp::Oversampling<float>::FilterType::filterHalfBandPolyphaseIIR)
+, oversamplingModel(2, 4, juce::dsp::Oversampling<float>::FilterType::filterHalfBandPolyphaseIIR)
 #endif
 {
     treeState.addParameterListener ("os", this);
@@ -53,7 +53,7 @@ juce::AudioProcessorValueTreeState::ParameterLayout ExciterAudioProcessor::creat
   // Make sure to update the number of reservations after adding params
   auto pOS = std::make_unique<juce::AudioParameterInt>("os", "OS", 0, 1, 0);
   auto pPhase = std::make_unique<juce::AudioParameterBool>("phase", "Phase", false);
-  auto pInput = std::make_unique<juce::AudioParameterFloat>("input", "Input", 0.0, 10.0, 0.0);
+  auto pInput = std::make_unique<juce::AudioParameterFloat>("input", "Amount", 0.0, 10.0, 0.0);
   auto pRange = std::make_unique<juce::AudioParameterFloat>("range", "Range", juce::NormalisableRange<float>(1000.0, 20000.0, 1.0, 0.3), 15000.0);
   auto pOdd = std::make_unique<juce::AudioParameterFloat>("odd", "Odd", 0.0, 1.0, 0.5);
   auto pEven = std::make_unique<juce::AudioParameterFloat>("even", "Even", 0.0, 1.0, 0.5);
@@ -334,8 +334,8 @@ bool ExciterAudioProcessor::hasEditor() const
 
 juce::AudioProcessorEditor* ExciterAudioProcessor::createEditor()
 {
-    //return new ExciterAudioProcessorEditor (*this);
-    return new juce::GenericAudioProcessorEditor (*this);
+    return new ExciterAudioProcessorEditor (*this);
+    //return new juce::GenericAudioProcessorEditor (*this);
 }
 
 //==============================================================================

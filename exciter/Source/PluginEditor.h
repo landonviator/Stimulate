@@ -28,6 +28,24 @@ private:
     // This reference is provided as a quick way for your editor to
     // access the processor object that created it.
     ExciterAudioProcessor& audioProcessor;
+    
+    void uiConstructor();
+    void initWindow();
+    void uiPaint(juce::Graphics &g);
+    void uiResized(float width, float height);
+    void saveWindowSize();
+    
+    
+    juce::Image background;
+    bool constructorFinished {false};
+    
+    viator_gui::Dial amountDial;
+    viator_gui::Dial rangeDial;
+    viator_gui::Dial oddDial;
+    viator_gui::Dial evenDial;
+    viator_gui::Fader mixFader;
+    viator_gui::Fader trimFader;
+    viator_gui::Border analyzer;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (ExciterAudioProcessorEditor)
 };

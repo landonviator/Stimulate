@@ -4,6 +4,19 @@
               addUsingNamespaceToJuceHeader="0" jucerFormatVersion="1" companyName="Viator DSP"
               pluginName="Stimulate">
   <MAINGROUP id="QaAXOy" name="Stimulate">
+    <GROUP id="{848403CE-C2B7-03C8-394A-14B6FFA6D8D8}" name="Assets">
+      <FILE id="QWP00s" name="dark_blue.png" compile="0" resource="1" file="Source/Assets/dark_blue.png"/>
+      <FILE id="IGBMpY" name="landon55-03.png" compile="0" resource="1" file="Source/Assets/landon55-03.png"/>
+      <FILE id="CzkHWF" name="landon55-04.png" compile="0" resource="1" file="Source/Assets/landon55-04.png"/>
+      <FILE id="YuoU5C" name="oscilloscope-01.png" compile="0" resource="1"
+            file="Source/Assets/oscilloscope-01.png"/>
+      <FILE id="BLsqhe" name="pluginBackground.png" compile="0" resource="1"
+            file="Source/Assets/pluginBackground.png"/>
+      <FILE id="v3xbSu" name="pluginBackground2.png" compile="0" resource="1"
+            file="Source/Assets/pluginBackground2.png"/>
+      <FILE id="ewBrPV" name="testTexture.png" compile="0" resource="1" file="Source/Assets/testTexture.png"/>
+      <FILE id="pX0FJY" name="TEXTURE5.png" compile="0" resource="1" file="Source/Assets/TEXTURE5.png"/>
+    </GROUP>
     <GROUP id="{04061C20-3ECD-6EEE-A90C-98D3613905F7}" name="Source">
       <FILE id="Yf4MsF" name="PluginProcessor.cpp" compile="1" resource="0"
             file="Source/PluginProcessor.cpp"/>
@@ -12,6 +25,18 @@
       <FILE id="BPmTri" name="PluginEditor.cpp" compile="1" resource="0"
             file="Source/PluginEditor.cpp"/>
       <FILE id="h1RuZj" name="PluginEditor.h" compile="0" resource="0" file="Source/PluginEditor.h"/>
+    </GROUP>
+    <GROUP id="{8D7D14EA-5D46-C8F1-4532-08B39CA7EDCF}" name="UI-Methods">
+      <FILE id="OcvnKJ" name="OversamplingMenu.cpp" compile="1" resource="0"
+            file="Source/UI-Methods/OversamplingMenu.cpp"/>
+      <FILE id="ROHBzl" name="UI-Constructor.cpp" compile="1" resource="0"
+            file="Source/UI-Methods/UI-Constructor.cpp"/>
+      <FILE id="rPpMra" name="UI-InitWindow.cpp" compile="1" resource="0"
+            file="Source/UI-Methods/UI-InitWindow.cpp"/>
+      <FILE id="RlS7sN" name="UI-Paint.cpp" compile="1" resource="0" file="Source/UI-Methods/UI-Paint.cpp"/>
+      <FILE id="I12vT1" name="UI-Resized.cpp" compile="1" resource="0" file="Source/UI-Methods/UI-Resized.cpp"/>
+      <FILE id="ZiK7hT" name="UI-SaveWindow.cpp" compile="1" resource="0"
+            file="Source/UI-Methods/UI-SaveWindow.cpp"/>
     </GROUP>
   </MAINGROUP>
   <JUCEOPTIONS JUCE_STRICT_REFCOUNTEDPOINTER="1" JUCE_VST3_CAN_REPLACE_VST2="0"/>
