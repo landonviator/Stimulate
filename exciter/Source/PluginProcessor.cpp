@@ -53,10 +53,10 @@ juce::AudioProcessorValueTreeState::ParameterLayout ExciterAudioProcessor::creat
   // Make sure to update the number of reservations after adding params
   auto pOS = std::make_unique<juce::AudioParameterInt>("os", "OS", 0, 1, 0);
   auto pPhase = std::make_unique<juce::AudioParameterBool>("phase", "Phase", false);
-  auto pInput = std::make_unique<juce::AudioParameterFloat>("input", "Amount", 0.0, 10.0, 0.0);
+  auto pInput = std::make_unique<juce::AudioParameterFloat>("input", "Amount", 0.0, 100.0, 0.0);
   auto pRange = std::make_unique<juce::AudioParameterFloat>("range", "Range", juce::NormalisableRange<float>(1000.0, 20000.0, 1.0, 0.3), 15000.0);
-  auto pOdd = std::make_unique<juce::AudioParameterFloat>("odd", "Odd", 0.0, 1.0, 0.5);
-  auto pEven = std::make_unique<juce::AudioParameterFloat>("even", "Even", 0.0, 1.0, 0.5);
+  auto pOdd = std::make_unique<juce::AudioParameterFloat>("odd", "Odd", 0.0, 10.0, 0.5);
+  auto pEven = std::make_unique<juce::AudioParameterFloat>("even", "Even", 0.0, 10.0, 0.5);
   auto pMix = std::make_unique<juce::AudioParameterFloat>("mix", "Mix", 0.0, 1.0, 0.0);
   auto pTrim = std::make_unique<juce::AudioParameterFloat>("trim", "Trim", -24.0, 24.0, 0.0);
   
@@ -96,7 +96,8 @@ void ExciterAudioProcessor::parameterChanged(const juce::String &parameterID, fl
     
     if (parameterID == "input")
     {
-        rawGain = viator_utils::utils::dbToGain(newValue);
+        auto newGain = juce::jmap(newValue, 0.0f, 100.0f, 0.0f, 10.0f);
+        rawGain = viator_utils::utils::dbToGain(newGain);
     }
     
     if (parameterID == "range")
@@ -108,12 +109,14 @@ void ExciterAudioProcessor::parameterChanged(const juce::String &parameterID, fl
     
     if (parameterID == "odd")
     {
-        oddMix = newValue;
+        auto newOdd = juce::jmap(newValue, 0.0f, 10.0f, 0.0f, 1.0f);
+        oddMix = newOdd;
     }
     
     if (parameterID == "even")
     {
-        evenMix = newValue;
+        auto newEven = juce::jmap(newValue, 0.0f, 10.0f, 0.0f, 1.0f);
+        evenMix = newEven;
     }
     
     if (parameterID == "mix")
@@ -228,11 +231,14 @@ void ExciterAudioProcessor::prepareToPlay (double sampleRate, int samplesPerBloc
     oversamplingModel.reset();
     
     // Member variables
-    rawGain = viator_utils::utils::dbToGain(treeState.getRawParameterValue("input")->load());
+    auto newGain = juce::jmap(treeState.getRawParameterValue("input")->load(), 0.0f, 100.0f, 0.0f, 10.0f);
+    rawGain = viator_utils::utils::dbToGain(newGain);
+    
     cutoff = treeState.getRawParameterValue("range")->load();
     mix = treeState.getRawParameterValue("mix")->load();
-    oddMix = treeState.getRawParameterValue("odd")->load();
-    evenMix = treeState.getRawParameterValue("even")->load();
+    
+    oddMix = juce::jmap(treeState.getRawParameterValue("odd")->load(), 0.0f, 10.0f, 0.0f, 1.0f);
+    evenMix = juce::jmap(treeState.getRawParameterValue("even")->load(), 0.0f, 10.0f, 0.0f, 1.0f);
     rawTrim = viator_utils::utils::dbToGain(treeState.getRawParameterValue("trim")->load());
     totalPhase = static_cast<bool>(treeState.getRawParameterValue("phase")->load());
 }
