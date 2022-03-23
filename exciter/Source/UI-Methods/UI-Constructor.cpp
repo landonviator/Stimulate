@@ -20,6 +20,8 @@ void ExciterAudioProcessorEditor::uiConstructor()
     
     addAndMakeVisible(rangeDial);
     rangeDial.setSkewFactorFromMidPoint(5000.0);
+    rangeDial.setDialStyle(viator_gui::Dial::DialStyle::kFullDialMirrow);
+    rangeDial.forceShadow();
     
     addAndMakeVisible(oddDial);
     addAndMakeVisible(evenDial);
