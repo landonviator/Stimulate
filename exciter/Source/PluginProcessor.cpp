@@ -76,87 +76,58 @@ void ExciterAudioProcessor::parameterChanged(const juce::String &parameterID, fl
 {
     if (parameterID == "os")
     {
-        updateParameters();
+        osToggle = static_cast<bool>(treeState.getRawParameterValue("os")->load());
+        
+        // Adjust samplerate of filters when oversampling
+        if (osToggle)
+        {
+            spec.sampleRate = getSampleRate() * oversamplingModel.getOversamplingFactor();
+            topBandFilter.prepare(spec);
+            bottomBandFilter.prepare(spec);
+        }
+
+        else
+        {
+            spec.sampleRate = getSampleRate();
+            topBandFilter.prepare(spec);
+            bottomBandFilter.prepare(spec);
+        }
     }
     
-    if (parameterID == "input")
-    {
-        updateParameters();
-    }
-    
-    if (parameterID == "range")
-    {
-        updateParameters();
-    }
-    
-    if (parameterID == "odd")
-    {
-        updateParameters();
-    }
-    
-    if (parameterID == "even")
-    {
-        updateParameters();
-    }
-    
-    if (parameterID == "mix")
-    {
-        updateParameters();
-    }
-    
-    if (parameterID == "trim")
-    {
-        updateParameters();
-    }
-    
-    if (parameterID == "phase")
-    {
-        updateParameters();
-    }
+    updateParameters();
 }
 
 void ExciterAudioProcessor::updateParameters()
 {
-    /** Oversampling */
-    osToggle = static_cast<bool>(treeState.getRawParameterValue("os")->load());
-    
-    // Adjust samplerate of filters when oversampling
-    if (osToggle)
-    {
-        spec.sampleRate = getSampleRate() * oversamplingModel.getOversamplingFactor();
-        topBandFilter.prepare(spec);
-        bottomBandFilter.prepare(spec);
-    }
-    
-    else
-    {
-        spec.sampleRate = getSampleRate();
-        topBandFilter.prepare(spec);
-        bottomBandFilter.prepare(spec);
-    }
+    rawGain.reset(spec.sampleRate, 0.02);
+    mix.reset(spec.sampleRate, 0.02);
+    oddMix.reset(spec.sampleRate, 0.02);
+    evenMix.reset(spec.sampleRate, 0.02);
+    cutoff.reset(spec.sampleRate, 0.02);
+    rawTrim.reset(spec.sampleRate, 0.02);
     
     /** Amount */
     auto newGain = juce::jmap(static_cast<float>(treeState.getRawParameterValue("input")->load()), 0.0f, 100.0f, 0.0f, 10.0f);
     rawGain = viator_utils::utils::dbToGain(newGain);
     
     /** Range */
-    cutoff = treeState.getRawParameterValue("range")->load();
-    topBandFilter.setCutoffFrequency(cutoff);
-    bottomBandFilter.setCutoffFrequency(cutoff);
+    cutoff.setTargetValue(treeState.getRawParameterValue("range")->load());
+    topBandFilter.setCutoffFrequency(cutoff.getNextValue());
+    bottomBandFilter.setCutoffFrequency(cutoff.getNextValue());
     
     /** Odd */
     auto newOdd = juce::jmap(static_cast<float>(treeState.getRawParameterValue("odd")->load()), 0.0f, 10.0f, 0.0f, 1.0f);
-    oddMix = newOdd;
+    oddMix.setTargetValue(newOdd);
                              
     /** Even */
     auto newEven = juce::jmap(static_cast<float>(treeState.getRawParameterValue("even")->load()), 0.0f, 10.0f, 0.0f, 1.0f);
-    evenMix = newEven;
+    evenMix.setTargetValue(newEven);
     
     /** Mix */
-    mix = treeState.getRawParameterValue("mix")->load() * 0.01;
+    mix.setTargetValue(treeState.getRawParameterValue("mix")->load() * 0.01);
     
     /** Trim */
-    rawTrim = viator_utils::utils::dbToGain(treeState.getRawParameterValue("trim")->load());
+    rawTrim.setTargetValue(viator_utils::utils::dbToGain(treeState.getRawParameterValue("trim")->load()));
     
     /** Phase */
     totalPhase = static_cast<bool>(treeState.getRawParameterValue("phase")->load());
@@ -227,26 +198,37 @@ void ExciterAudioProcessor::changeProgramName (int index, const juce::String& ne
 //==============================================================================
 void ExciterAudioProcessor::prepareToPlay (double sampleRate, int samplesPerBlock)
 {
-    
-    // Oversampling
+    /** Oversampling */
     oversamplingModel.initProcessing(samplesPerBlock);
     oversamplingModel.reset();
+    osToggle = static_cast<bool>(treeState.getRawParameterValue("os")->load());
     
-    // Member variables
-    updateParameters();
+    // Adjust samplerate of filters when oversampling
+    if (osToggle)
+    {
+        spec.sampleRate = getSampleRate() * oversamplingModel.getOversamplingFactor();
+    }
+
+    else
+    {
+        spec.sampleRate = getSampleRate();
+    }
     
+    // The rest of ProcessSpec
     spec.maximumBlockSize = samplesPerBlock;
     spec.numChannels = getTotalNumInputChannels();
     
     // Top band filter
+    topBandFilter.prepare(spec);
     topBandFilter.setType(juce::dsp::LinkwitzRileyFilterType::highpass);
-    updateParameters();
     
     // Bottom band filter
+    bottomBandFilter.prepare(spec);
     bottomBandFilter.setType(juce::dsp::LinkwitzRileyFilterType::lowpass);
+    
+    // Member variables
     updateParameters();
-    
-    
+    DBG(oversamplingModel.getOversamplingFactor());
 }
 
 void ExciterAudioProcessor::releaseResources()
@@ -318,14 +300,14 @@ void ExciterAudioProcessor::stimulationBlock(juce::dsp::AudioBlock<float> &curre
             float bottomBandSignal = bottomBandFilter.processSample(ch, input);
             
             // Distortion
-            float odd = std::atan(topBandSignal * rawGain);
-            float even = topBandSignal * rawGain + std::pow(topBandSignal * rawGain, 4);
+            float odd = std::atan(topBandSignal * rawGain.getNextValue());
+            float even = topBandSignal * rawGain.getNextValue() + std::pow(topBandSignal * rawGain.getNextValue(), 4);
                 
             // Mix the odd even distortion
-            const auto outputSignal = bottomBandSignal + (odd * oddMix + even * evenMix) * rawTrim;
+            const auto outputSignal = bottomBandSignal + (odd * oddMix.getNextValue() + even * evenMix.getNextValue()) * rawTrim.getNextValue();
             
             // Output
-            data[sample] = ((1.0 - mix) * (topBandSignal + bottomBandSignal) + outputSignal * mix);
+            data[sample] = ((1.0 - mix.getNextValue()) * (topBandSignal + bottomBandSignal) + outputSignal * mix.getNextValue());
             
             // Apply phase to output
             data[sample] *= getPhase(totalPhase);

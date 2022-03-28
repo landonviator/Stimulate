@@ -80,12 +80,12 @@ private:
     void parameterChanged (const juce::String& parameterID, float newValue) override;
     
     // Variables
-    float rawGain {1.0};
-    float mix {0.0};
-    float oddMix {0.5};
-    float evenMix {0.5};
-    float cutoff {15000};
-    float rawTrim {1.0};
+    juce::SmoothedValue<float> rawGain {1.0};
+    juce::SmoothedValue<float> mix {0.0};
+    juce::SmoothedValue<float> oddMix {0.5};
+    juce::SmoothedValue<float> evenMix {0.5};
+    juce::SmoothedValue<float> cutoff {8000.0};
+    juce::SmoothedValue<float> rawTrim {1.0};
     
     bool osToggle {false};
     bool totalPhase {false};
