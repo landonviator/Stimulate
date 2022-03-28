@@ -12,9 +12,13 @@
 
 void ExciterAudioProcessorEditor::uiConstructor()
 {
+    startTimerHz(60);
+    
     
     // Window
     initWindow();
+    
+    addAndMakeVisible(header);
     
     addAndMakeVisible(amountDial);
     amountDialAttach = std::make_unique<SliderAttachment>(audioProcessor.treeState, "input", amountDial);

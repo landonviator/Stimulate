@@ -22,6 +22,8 @@ ExciterAudioProcessor::ExciterAudioProcessor()
                        ),
 treeState (*this, nullptr, "PARAMETER", createParameterLayout())
 , oversamplingModel(2, 4, juce::dsp::Oversampling<float>::FilterType::filterHalfBandPolyphaseIIR)
+, forwardFFT (fftOrder),
+window (forwardFFT.getSize(), juce::dsp::WindowingFunction<float>::hann, true)
 #endif
 {
     treeState.addParameterListener ("os", this);
@@ -311,7 +313,51 @@ void ExciterAudioProcessor::stimulationBlock(juce::dsp::AudioBlock<float> &curre
             
             // Apply phase to output
             data[sample] *= getPhase(totalPhase);
+            
+            pushNextSampleIntoFifo(data[sample]);
         }
+    }
+}
+
+void ExciterAudioProcessor::pushNextSampleIntoFifo(float sample) noexcept
+{
+    // if the fifo contains enough data, set a flag to say
+    // that the next frame should now be rendered..
+    if (fifoIndex == fftSize)
+    {
+        if (! nextFFTBlockReady)
+        {
+            juce::zeromem (fftData, sizeof (fftData));
+            memcpy (fftData, fifo, sizeof (fifo));
+            nextFFTBlockReady = true;
+        }
+     
+        fifoIndex = 0;
+    }
+     
+    fifo[fifoIndex++] = sample;
+}
+
+void ExciterAudioProcessor::drawNextFrameOfSpectrum()
+{
+    // first apply a windowing function to our data
+    window.multiplyWithWindowingTable (fftData, fftSize);      
+     
+    // then render our FFT data..
+    forwardFFT.performFrequencyOnlyForwardTransform (fftData);
+     
+    auto mindB = -100.0f;
+    auto maxdB =    0.0f;
+     
+    for (int i = 0; i < scopeSize; ++i)
+    {
+        auto skewedProportionX = 1.0f - std::exp (std::log (1.0f - (float) i / (float) scopeSize) * 0.2f);
+        auto fftDataIndex = juce::jlimit (0, fftSize / 2, (int) (skewedProportionX * (float) fftSize * 0.5f));
+        auto level = juce::jmap (juce::jlimit (mindB, maxdB, juce::Decibels::gainToDecibels (fftData[fftDataIndex])
+                                                                   - juce::Decibels::gainToDecibels ((float) fftSize)),
+                                         mindB, maxdB, 0.0f, 1.0f);
+     
+        scopeData[i] = level;
     }
 }
 

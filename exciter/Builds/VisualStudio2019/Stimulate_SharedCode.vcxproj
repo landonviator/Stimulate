@@ -139,6 +139,7 @@
   <ItemGroup>
     <ClCompile Include="..\..\Source\PluginProcessor.cpp"/>
     <ClCompile Include="..\..\Source\PluginEditor.cpp"/>
+    <ClCompile Include="..\..\Source\UI-Components\LV_HeaderComponent.cpp"/>
     <ClCompile Include="..\..\Source\UI-Methods\OversamplingMenu.cpp"/>
     <ClCompile Include="..\..\Source\UI-Methods\UI-Constructor.cpp"/>
     <ClCompile Include="..\..\Source\UI-Methods\UI-InitWindow.cpp"/>
@@ -2249,6 +2250,7 @@
   <ItemGroup>
     <ClInclude Include="..\..\Source\PluginProcessor.h"/>
     <ClInclude Include="..\..\Source\PluginEditor.h"/>
+    <ClInclude Include="..\..\Source\UI-Components\LV_HeaderComponent.h"/>
     <ClInclude Include="C:\JUCE\modules\juce_audio_basics\audio_play_head\juce_AudioPlayHead.h"/>
     <ClInclude Include="C:\JUCE\modules\juce_audio_basics\buffers\juce_AudioChannelSet.h"/>
     <ClInclude Include="C:\JUCE\modules\juce_audio_basics\buffers\juce_AudioDataConverters.h"/>

@@ -8,6 +8,9 @@
     <Filter Include="Stimulate\Source">
       <UniqueIdentifier>{BBAE02A5-5054-6240-5EAB-BF6408B3370A}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Stimulate\UI-Components">
+      <UniqueIdentifier>{5B35FB67-0C45-7449-ED53-7AFC89DCFCEB}</UniqueIdentifier>
+    </Filter>
     <Filter Include="Stimulate\UI-Methods">
       <UniqueIdentifier>{C7B8DD3A-025F-3804-40E7-3B89856FC17B}</UniqueIdentifier>
     </Filter>
@@ -498,6 +501,9 @@
     </ClCompile>
     <ClCompile Include="..\..\Source\PluginEditor.cpp">
       <Filter>Stimulate\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\UI-Components\LV_HeaderComponent.cpp">
+      <Filter>Stimulate\UI-Components</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Source\UI-Methods\OversamplingMenu.cpp">
       <Filter>Stimulate\UI-Methods</Filter>
@@ -2789,6 +2795,9 @@
     </ClInclude>
     <ClInclude Include="..\..\Source\PluginEditor.h">
       <Filter>Stimulate\Source</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\UI-Components\LV_HeaderComponent.h">
+      <Filter>Stimulate\UI-Components</Filter>
     </ClInclude>
     <ClInclude Include="C:\JUCE\modules\juce_audio_basics\audio_play_head\juce_AudioPlayHead.h">
       <Filter>JUCE Modules\juce_audio_basics\audio_play_head</Filter>

@@ -38,3 +38,21 @@ void ExciterAudioProcessorEditor::resized()
 {
     uiResized(getWidth(), getHeight());
 }
+
+void ExciterAudioProcessorEditor::drawFrame(juce::Graphics &g)
+{
+    for (int i = 1; i < audioProcessor.scopeSize; ++i)
+    {
+        auto width  = spectrumWindow.toType<int>().getWidth();
+        auto height = spectrumWindow.toType<int>().getHeight();
+        
+        int x = spectrumWindow.getX();
+        int y = spectrumWindow.getY();
+        
+        g.setColour(juce::Colours::whitesmoke.withAlpha(0.5f));
+        g.drawLine ({ (float) juce::jmap (i - 1, 0, audioProcessor.scopeSize - 1, x, width + x),
+                                juce::jmap (audioProcessor.scopeData[i - 1], 0.0f, 1.0f, (float) height + (float) y, (float) y),
+                        (float) juce::jmap (i,     0, audioProcessor.scopeSize - 1, x, width + x),
+                                juce::jmap (audioProcessor.scopeData[i],     0.0f, 1.0f, (float) height + (float) y, (float) y), });
+    }
+}

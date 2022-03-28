@@ -72,6 +72,19 @@ public:
     /** Window Vars =====================================================*/
     float windowWidth {0.0f};
     float windowHeight {0.0f};
+    
+    /** Spectrum analyzer */
+    enum
+    {
+        fftOrder  = 11,
+        fftSize   = 1 << fftOrder,
+        scopeSize = 512
+    };
+        
+    /** FFT public vars */
+    bool nextFFTBlockReady = false;
+    void drawNextFrameOfSpectrum();
+    float scopeData [scopeSize];
 
 private:
     
@@ -101,6 +114,16 @@ private:
     void updateParameters();
     
     juce::dsp::ProcessSpec spec;
+    
+    /** Spectrum analyzer */
+    juce::dsp::FFT forwardFFT;
+    juce::dsp::WindowingFunction<float> window;
+    void pushNextSampleIntoFifo (float sample) noexcept;
+         
+    /** FFT private vars */
+    float fifo [fftSize];
+    float fftData [2 * fftSize];
+    int fifoIndex = 0;
     
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (ExciterAudioProcessor)

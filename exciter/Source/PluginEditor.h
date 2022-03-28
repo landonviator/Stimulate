@@ -10,11 +10,12 @@
 
 #include <JuceHeader.h>
 #include "PluginProcessor.h"
+#include "./UI-Components/LV_HeaderComponent.h"
 
 //==============================================================================
 /**
 */
-class ExciterAudioProcessorEditor  : public juce::AudioProcessorEditor
+class ExciterAudioProcessorEditor  : public juce::AudioProcessorEditor, private juce::Timer
 {
 public:
     ExciterAudioProcessorEditor (ExciterAudioProcessor&);
@@ -23,6 +24,16 @@ public:
     //==============================================================================
     void paint (juce::Graphics&) override;
     void resized() override;
+    
+    void timerCallback() final
+    {
+        if (audioProcessor.nextFFTBlockReady)
+        {
+            audioProcessor.drawNextFrameOfSpectrum();
+            audioProcessor.nextFFTBlockReady = false;
+            repaint();
+        }
+    }
 
 private:
     // This reference is provided as a quick way for your editor to
@@ -35,6 +46,8 @@ private:
     void uiResized(float width, float height);
     void saveWindowSize();
     
+    void drawFrame(juce::Graphics &g);
+    juce::Rectangle<float> spectrumWindow;
     
     juce::Image background;
     bool constructorFinished {false};
@@ -60,6 +73,8 @@ private:
     std::unique_ptr<SliderAttachment> trimFaderAttach;
     std::unique_ptr<ButtonAttachment> phaseAttach;
     std::unique_ptr<ButtonAttachment> osAttach;
+    
+    LV_HeaderComponent header;
     
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (ExciterAudioProcessorEditor)
 };

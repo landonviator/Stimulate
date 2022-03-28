@@ -14,4 +14,6 @@ void ExciterAudioProcessorEditor::uiPaint(juce::Graphics &g)
 {
     background = juce::ImageCache::getFromMemory(BinaryData::dark_blue_png, BinaryData::dark_blue_pngSize);
     g.drawImageWithin(background, 0, 0, getWidth(), getHeight(), juce::RectanglePlacement::stretchToFit);
+    
+    drawFrame(g);
 }

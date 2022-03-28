@@ -26,6 +26,12 @@
             file="Source/PluginEditor.cpp"/>
       <FILE id="h1RuZj" name="PluginEditor.h" compile="0" resource="0" file="Source/PluginEditor.h"/>
     </GROUP>
+    <GROUP id="{01DB25B0-17A8-922B-4CB6-D50FA67E8271}" name="UI-Components">
+      <FILE id="QFLEkk" name="LV_HeaderComponent.cpp" compile="1" resource="0"
+            file="Source/UI-Components/LV_HeaderComponent.cpp"/>
+      <FILE id="NozcHj" name="LV_HeaderComponent.h" compile="0" resource="0"
+            file="Source/UI-Components/LV_HeaderComponent.h"/>
+    </GROUP>
     <GROUP id="{8D7D14EA-5D46-C8F1-4532-08B39CA7EDCF}" name="UI-Methods">
       <FILE id="OcvnKJ" name="OversamplingMenu.cpp" compile="1" resource="0"
             file="Source/UI-Methods/OversamplingMenu.cpp"/>
