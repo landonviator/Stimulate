@@ -98,6 +98,7 @@ private:
     juce::dsp::Oversampling<float> oversamplingModel;
     
     void stimulationBlock(juce::dsp::AudioBlock<float> &currentBlock);
+    void updateParameters();
     
     juce::dsp::ProcessSpec spec;
     

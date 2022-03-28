@@ -54,10 +54,10 @@ juce::AudioProcessorValueTreeState::ParameterLayout ExciterAudioProcessor::creat
   auto pOS = std::make_unique<juce::AudioParameterInt>("os", "OS", 0, 1, 0);
   auto pPhase = std::make_unique<juce::AudioParameterBool>("phase", "Phase", false);
   auto pInput = std::make_unique<juce::AudioParameterFloat>("input", "Amount", 0.0, 100.0, 0.0);
-  auto pRange = std::make_unique<juce::AudioParameterFloat>("range", "Range", juce::NormalisableRange<float>(1000.0, 20000.0, 1.0, 0.3), 15000.0);
-  auto pOdd = std::make_unique<juce::AudioParameterFloat>("odd", "Odd", 0.0, 10.0, 0.5);
-  auto pEven = std::make_unique<juce::AudioParameterFloat>("even", "Even", 0.0, 10.0, 0.5);
-  auto pMix = std::make_unique<juce::AudioParameterFloat>("mix", "Mix", 0.0, 1.0, 0.0);
+  auto pRange = std::make_unique<juce::AudioParameterFloat>("range", "Range", juce::NormalisableRange<float>(1000.0, 20000.0, 1.0, 0.3), 8000.0);
+  auto pOdd = std::make_unique<juce::AudioParameterFloat>("odd", "Odd", 0.0, 10.0, 10.0);
+  auto pEven = std::make_unique<juce::AudioParameterFloat>("even", "Even", 0.0, 10.0, 1.0);
+  auto pMix = std::make_unique<juce::AudioParameterFloat>("mix", "Mix", 0.0, 100.0, 100.0);
   auto pTrim = std::make_unique<juce::AudioParameterFloat>("trim", "Trim", -24.0, 24.0, 0.0);
   
   params.push_back(std::move(pOS));
@@ -76,63 +76,90 @@ void ExciterAudioProcessor::parameterChanged(const juce::String &parameterID, fl
 {
     if (parameterID == "os")
     {
-        osToggle = newValue;
-        
-        // Adjust samplerate of filters when oversampling
-        if (osToggle)
-        {
-            spec.sampleRate = getSampleRate() * oversamplingModel.getOversamplingFactor();
-            topBandFilter.prepare(spec);
-            bottomBandFilter.prepare(spec);
-        }
-        
-        else
-        {
-            spec.sampleRate = getSampleRate();
-            topBandFilter.prepare(spec);
-            bottomBandFilter.prepare(spec);
-        }
+        updateParameters();
     }
     
     if (parameterID == "input")
     {
-        auto newGain = juce::jmap(newValue, 0.0f, 100.0f, 0.0f, 10.0f);
-        rawGain = viator_utils::utils::dbToGain(newGain);
+        updateParameters();
     }
     
     if (parameterID == "range")
     {
-        cutoff = newValue;
-        topBandFilter.setCutoffFrequency(cutoff);
-        bottomBandFilter.setCutoffFrequency(cutoff);
+        updateParameters();
     }
     
     if (parameterID == "odd")
     {
-        auto newOdd = juce::jmap(newValue, 0.0f, 10.0f, 0.0f, 1.0f);
-        oddMix = newOdd;
+        updateParameters();
     }
     
     if (parameterID == "even")
     {
-        auto newEven = juce::jmap(newValue, 0.0f, 10.0f, 0.0f, 1.0f);
-        evenMix = newEven;
+        updateParameters();
     }
     
     if (parameterID == "mix")
     {
-        mix = newValue;
+        updateParameters();
     }
     
     if (parameterID == "trim")
     {
-        rawTrim = viator_utils::utils::dbToGain(newValue);
+        updateParameters();
     }
     
     if (parameterID == "phase")
     {
-        totalPhase = static_cast<bool>(newValue);
+        updateParameters();
     }
+}
+
+void ExciterAudioProcessor::updateParameters()
+{
+    /** Oversampling */
+    osToggle = treeState.getRawParameterValue("os")->load();
+    
+    // Adjust samplerate of filters when oversampling
+    if (osToggle)
+    {
+        spec.sampleRate = getSampleRate() * oversamplingModel.getOversamplingFactor();
+        topBandFilter.prepare(spec);
+        bottomBandFilter.prepare(spec);
+    }
+    
+    else
+    {
+        spec.sampleRate = getSampleRate();
+        topBandFilter.prepare(spec);
+        bottomBandFilter.prepare(spec);
+    }
+    
+    /** Amount */
+    auto newGain = juce::jmap(static_cast<float>(treeState.getRawParameterValue("input")->load()), 0.0f, 100.0f, 0.0f, 10.0f);
+    rawGain = viator_utils::utils::dbToGain(newGain);
+    
+    /** Range */
+    cutoff = treeState.getRawParameterValue("range")->load();
+    topBandFilter.setCutoffFrequency(cutoff);
+    bottomBandFilter.setCutoffFrequency(cutoff);
+    
+    /** Odd */
+    auto newOdd = juce::jmap(static_cast<float>(treeState.getRawParameterValue("odd")->load()), 0.0f, 10.0f, 0.0f, 1.0f);
+    oddMix = newOdd;
+                             
+    /** Even */
+    auto newEven = juce::jmap(static_cast<float>(treeState.getRawParameterValue("even")->load()), 0.0f, 10.0f, 0.0f, 1.0f);
+    evenMix = newEven;
+    
+    /** Mix */
+    mix = treeState.getRawParameterValue("mix")->load() * 0.01;
+    
+    /** Trim */
+    rawTrim = viator_utils::utils::dbToGain(treeState.getRawParameterValue("trim")->load());
+    
+    /** Phase */
+    totalPhase = static_cast<bool>(treeState.getRawParameterValue("phase")->load());
 }
 
 //==============================================================================
@@ -200,47 +227,25 @@ void ExciterAudioProcessor::changeProgramName (int index, const juce::String& ne
 //==============================================================================
 void ExciterAudioProcessor::prepareToPlay (double sampleRate, int samplesPerBlock)
 {
-    osToggle = *treeState.getRawParameterValue("os");
     
-    // Spec
-    if (osToggle)
-    {
-        spec.sampleRate = sampleRate * oversamplingModel.getOversamplingFactor();
-    }
-    
-    else
-    {
-        spec.sampleRate = sampleRate;
-    }
+    // Member variables
+    updateParameters();
     
     spec.maximumBlockSize = samplesPerBlock;
     spec.numChannels = getTotalNumInputChannels();
     
     // Top band filter
-    topBandFilter.prepare(spec);
     topBandFilter.setType(juce::dsp::LinkwitzRileyFilterType::highpass);
-    topBandFilter.setCutoffFrequency(treeState.getRawParameterValue("range")->load());
+    updateParameters();
     
     // Bottom band filter
-    bottomBandFilter.prepare(spec);
     bottomBandFilter.setType(juce::dsp::LinkwitzRileyFilterType::lowpass);
-    bottomBandFilter.setCutoffFrequency(treeState.getRawParameterValue("range")->load());
+    updateParameters();
     
     // Oversampling
     oversamplingModel.initProcessing(samplesPerBlock);
     oversamplingModel.reset();
     
-    // Member variables
-    auto newGain = juce::jmap(treeState.getRawParameterValue("input")->load(), 0.0f, 100.0f, 0.0f, 10.0f);
-    rawGain = viator_utils::utils::dbToGain(newGain);
-    
-    cutoff = treeState.getRawParameterValue("range")->load();
-    mix = treeState.getRawParameterValue("mix")->load();
-    
-    oddMix = juce::jmap(treeState.getRawParameterValue("odd")->load(), 0.0f, 10.0f, 0.0f, 1.0f);
-    evenMix = juce::jmap(treeState.getRawParameterValue("even")->load(), 0.0f, 10.0f, 0.0f, 1.0f);
-    rawTrim = viator_utils::utils::dbToGain(treeState.getRawParameterValue("trim")->load());
-    totalPhase = static_cast<bool>(treeState.getRawParameterValue("phase")->load());
 }
 
 void ExciterAudioProcessor::releaseResources()
@@ -366,6 +371,8 @@ void ExciterAudioProcessor::setStateInformation (const void* data, int sizeInByt
         // Window Size
         windowWidth = variableTree.getProperty("width");
         windowHeight = variableTree.getProperty("height");
+        
+        updateParameters();
     }
 }
 

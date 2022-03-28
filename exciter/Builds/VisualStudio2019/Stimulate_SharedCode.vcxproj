@@ -2191,6 +2191,9 @@
     <ClCompile Include="..\..\..\..\viatordsp\viator_modules\viator_dsp\Clipper.cpp">
       <ExcludedFromBuild>true</ExcludedFromBuild>
     </ClCompile>
+    <ClCompile Include="..\..\..\..\viatordsp\viator_modules\viator_dsp\LFOGenerator.cpp">
+      <ExcludedFromBuild>true</ExcludedFromBuild>
+    </ClCompile>
     <ClCompile Include="..\..\..\..\viatordsp\viator_modules\viator_dsp\Saturation.cpp">
       <ExcludedFromBuild>true</ExcludedFromBuild>
     </ClCompile>
@@ -3091,6 +3094,7 @@
     <ClInclude Include="..\..\..\..\JUCE\modules\juce_gui_extra\juce_gui_extra.h"/>
     <ClInclude Include="..\..\..\..\viatordsp\viator_modules\Common\Common.h"/>
     <ClInclude Include="..\..\..\..\viatordsp\viator_modules\viator_dsp\Clipper.h"/>
+    <ClInclude Include="..\..\..\..\viatordsp\viator_modules\viator_dsp\LFOGenerator.h"/>
     <ClInclude Include="..\..\..\..\viatordsp\viator_modules\viator_dsp\Saturation.h"/>
     <ClInclude Include="..\..\..\..\viatordsp\viator_modules\viator_dsp\svfilter.h"/>
     <ClInclude Include="..\..\..\..\viatordsp\viator_modules\viator_dsp\WaveShaper.h"/>

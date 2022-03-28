@@ -57,12 +57,5 @@ private:
     std::unique_ptr<SliderAttachment> mixFaderAttach;
     std::unique_ptr<SliderAttachment> trimFaderAttach;
     
-    viator_gui::Label amountDialLabel;
-    viator_gui::Label rangeDialLabel;
-    viator_gui::Label oddDialLabel;
-    viator_gui::Label evenDialLabel;
-    viator_gui::Label mixFaderLabel;
-    viator_gui::Label trimFaderLabel;
-
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (ExciterAudioProcessorEditor)
 };

@@ -2692,6 +2692,9 @@
     <ClCompile Include="..\..\..\..\viatordsp\viator_modules\viator_dsp\Clipper.cpp">
       <Filter>JUCE Modules\viator_modules\viator_dsp</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\..\viatordsp\viator_modules\viator_dsp\LFOGenerator.cpp">
+      <Filter>JUCE Modules\viator_modules\viator_dsp</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\..\..\viatordsp\viator_modules\viator_dsp\Saturation.cpp">
       <Filter>JUCE Modules\viator_modules\viator_dsp</Filter>
     </ClCompile>
@@ -5320,6 +5323,9 @@
       <Filter>JUCE Modules\viator_modules\Common</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\viatordsp\viator_modules\viator_dsp\Clipper.h">
+      <Filter>JUCE Modules\viator_modules\viator_dsp</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\viatordsp\viator_modules\viator_dsp\LFOGenerator.h">
       <Filter>JUCE Modules\viator_modules\viator_dsp</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\viatordsp\viator_modules\viator_dsp\Saturation.h">
