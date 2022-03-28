@@ -46,6 +46,8 @@ private:
     viator_gui::Fader mixFader;
     viator_gui::Fader trimFader;
     viator_gui::Border analyzer;
+    viator_gui::Toggle phaseToggle;
+    viator_gui::Toggle osToggle;
     
     using SliderAttachment = juce::AudioProcessorValueTreeState::SliderAttachment;
     using ButtonAttachment = juce::AudioProcessorValueTreeState::ButtonAttachment;
@@ -56,6 +58,8 @@ private:
     std::unique_ptr<SliderAttachment> evenDialAttach;
     std::unique_ptr<SliderAttachment> mixFaderAttach;
     std::unique_ptr<SliderAttachment> trimFaderAttach;
+    std::unique_ptr<ButtonAttachment> phaseAttach;
+    std::unique_ptr<ButtonAttachment> osAttach;
     
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (ExciterAudioProcessorEditor)
 };

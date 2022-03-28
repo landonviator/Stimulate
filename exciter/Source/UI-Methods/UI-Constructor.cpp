@@ -38,4 +38,12 @@ void ExciterAudioProcessorEditor::uiConstructor()
     trimFaderAttach = std::make_unique<SliderAttachment>(audioProcessor.treeState, "trim", trimFader);
     
     addAndMakeVisible(analyzer);
+    
+    addAndMakeVisible(phaseToggle);
+    phaseToggle.setToggleStyle(viator_gui::Toggle::ToggleStyle::kPhase);
+    phaseAttach = std::make_unique<ButtonAttachment>(audioProcessor.treeState, "phase", phaseToggle);
+    
+    addAndMakeVisible(osToggle);
+    osToggle.setToggleStyle(viator_gui::Toggle::ToggleStyle::kPower);
+    osAttach = std::make_unique<ButtonAttachment>(audioProcessor.treeState, "os", osToggle);
 }

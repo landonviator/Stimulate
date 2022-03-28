@@ -51,7 +51,7 @@ juce::AudioProcessorValueTreeState::ParameterLayout ExciterAudioProcessor::creat
   std::vector <std::unique_ptr<juce::RangedAudioParameter>> params;
     
   // Make sure to update the number of reservations after adding params
-  auto pOS = std::make_unique<juce::AudioParameterInt>("os", "OS", 0, 1, 0);
+  auto pOS = std::make_unique<juce::AudioParameterBool>("os", "OS", false);
   auto pPhase = std::make_unique<juce::AudioParameterBool>("phase", "Phase", false);
   auto pInput = std::make_unique<juce::AudioParameterFloat>("input", "Amount", 0.0, 100.0, 0.0);
   auto pRange = std::make_unique<juce::AudioParameterFloat>("range", "Range", juce::NormalisableRange<float>(1000.0, 20000.0, 1.0, 0.3), 8000.0);
@@ -118,7 +118,7 @@ void ExciterAudioProcessor::parameterChanged(const juce::String &parameterID, fl
 void ExciterAudioProcessor::updateParameters()
 {
     /** Oversampling */
-    osToggle = treeState.getRawParameterValue("os")->load();
+    osToggle = static_cast<bool>(treeState.getRawParameterValue("os")->load());
     
     // Adjust samplerate of filters when oversampling
     if (osToggle)
@@ -228,6 +228,10 @@ void ExciterAudioProcessor::changeProgramName (int index, const juce::String& ne
 void ExciterAudioProcessor::prepareToPlay (double sampleRate, int samplesPerBlock)
 {
     
+    // Oversampling
+    oversamplingModel.initProcessing(samplesPerBlock);
+    oversamplingModel.reset();
+    
     // Member variables
     updateParameters();
     
@@ -242,9 +246,6 @@ void ExciterAudioProcessor::prepareToPlay (double sampleRate, int samplesPerBloc
     bottomBandFilter.setType(juce::dsp::LinkwitzRileyFilterType::lowpass);
     updateParameters();
     
-    // Oversampling
-    oversamplingModel.initProcessing(samplesPerBlock);
-    oversamplingModel.reset();
     
 }
 
@@ -285,7 +286,7 @@ void ExciterAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce
 
     juce::dsp::AudioBlock<float> block (buffer);
     juce::dsp::AudioBlock<float> upSampledBlock (buffer);
-    
+
     // Oversample if ON
     if (osToggle)
     {
@@ -293,7 +294,7 @@ void ExciterAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce
         stimulationBlock(upSampledBlock);
         oversamplingModel.processSamplesDown(block);
     }
-    
+
     // Don't Oversample if OFF
     else
     {

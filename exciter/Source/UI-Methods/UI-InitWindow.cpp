@@ -19,8 +19,8 @@ void ExciterAudioProcessorEditor::initWindow()
     int x = r.getWidth();
     
     // Plugin window will always initialize to half the screen width by half of that for a rectangle
-    auto width = x / 2.0;
-    auto height = width / 2.0;
+    auto width = x * 0.5;
+    auto height = width * 0.5;
     
     //Making the window resizable by aspect ratio and setting size
     AudioProcessorEditor::setResizable(true, true);

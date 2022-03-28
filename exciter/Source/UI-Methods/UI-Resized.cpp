@@ -27,7 +27,8 @@ void ExciterAudioProcessorEditor::uiResized(float width, float height)
     evenDial.setBounds(rangeDial.getX(), oddDial.getY(), dialSize, dialSize);
     
     analyzer.setBounds(evenDial.getX() + evenDial.getWidth(), topMargin, analyzerWidth, getHeight() - topMargin * 2.0);
-    
+    phaseToggle.setBounds(analyzer.getX() + analyzer.getWidth() * 0.15, analyzer.getY() - topMargin * 0.5, 48, 48);
+    osToggle.setBounds(analyzer.getX() + analyzer.getWidth() * 0.75, analyzer.getY() - topMargin * 0.5, 48, 48);
     mixFader.setBounds(analyzer.getX() + analyzer.getWidth(), topMargin, faderWidth, faderHeight);
     trimFader.setBounds(mixFader.getX() + mixFader.getWidth(), topMargin, faderWidth, faderHeight);
     

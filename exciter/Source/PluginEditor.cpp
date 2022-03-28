@@ -18,6 +18,8 @@ ExciterAudioProcessorEditor::ExciterAudioProcessorEditor (ExciterAudioProcessor&
 , evenDial(" dB", "Even", 0.0, 10.0, 0.01, 0.0)
 , mixFader(" %", "Mix", 0.0, 1.0, 0.01, 0.0)
 , trimFader(" dB", "Trim", -24.0, 24.0, 0.01, 0.0)
+, phaseToggle("Phase")
+, osToggle("Oversample")
 {
     uiConstructor();
 }
