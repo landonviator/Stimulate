@@ -12,7 +12,7 @@
 
 void ExciterAudioProcessorEditor::uiConstructor()
 {
-    startTimerHz(60);
+    startTimerHz(10);
     
     
     // Window
