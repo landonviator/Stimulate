@@ -22,11 +22,14 @@ void ExciterAudioProcessorEditor::uiConstructor()
     
     addAndMakeVisible(amountDial);
     amountDialAttach = std::make_unique<SliderAttachment>(audioProcessor.treeState, "input", amountDial);
+    amountDial.setColour(juce::Slider::ColourIds::thumbColourId, juce::Colours::black.brighter(0.15f));
+    amountDial.forceShadow();
     
     addAndMakeVisible(rangeDial);
     rangeDialAttach = std::make_unique<SliderAttachment>(audioProcessor.treeState, "range", rangeDial);
     rangeDial.setSkewFactorFromMidPoint(5000.0);
     rangeDial.setDialStyle(viator_gui::Dial::DialStyle::kFullDialMirrow);
+    rangeDial.setColour(juce::Slider::ColourIds::thumbColourId, juce::Colours::black.brighter(0.15f));
     rangeDial.forceShadow();
     
     addAndMakeVisible(oddDial);
@@ -34,6 +37,8 @@ void ExciterAudioProcessorEditor::uiConstructor()
     
     addAndMakeVisible(evenDial);
     evenDialAttach = std::make_unique<SliderAttachment>(audioProcessor.treeState, "even", evenDial);
+    evenDial.setColour(juce::Slider::ColourIds::thumbColourId, juce::Colours::palevioletred.darker(1.0).darker(0.3));
+    evenDial.forceShadow();
     
     addAndMakeVisible(mixFader);
     mixFaderAttach = std::make_unique<SliderAttachment>(audioProcessor.treeState, "mix", mixFader);
