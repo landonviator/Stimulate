@@ -44,10 +44,10 @@ void ExciterAudioProcessorEditor::drawFrame(juce::Graphics &g)
     for (int i = 1; i < audioProcessor.scopeSize; ++i)
     {
         auto width  = spectrumWindow.toType<int>().getWidth();
-        auto height = spectrumWindow.toType<int>().getHeight();
+        auto height = spectrumWindow.toType<int>().getHeight() * 0.9;
         
         int x = spectrumWindow.getX();
-        int y = spectrumWindow.getY();
+        int y = spectrumWindow.getY() + spectrumWindow.getHeight() * 0.05;
         
         g.setColour(juce::Colours::whitesmoke.withAlpha(0.5f));
         g.drawLine ({ (float) juce::jmap (i - 1, 0, audioProcessor.scopeSize - 1, x, width + x),

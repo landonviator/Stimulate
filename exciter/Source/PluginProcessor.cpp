@@ -87,6 +87,7 @@ void ExciterAudioProcessor::parameterChanged(const juce::String &parameterID, fl
             topBandFilter.prepare(spec);
             bottomBandFilter.prepare(spec);
             highPassFilter.prepare(spec);
+            pushNextSampleIntoFifo(0.0f);
         }
 
         else
@@ -214,6 +215,7 @@ void ExciterAudioProcessor::prepareToPlay (double sampleRate, int samplesPerBloc
     if (osToggle)
     {
         spec.sampleRate = getSampleRate() * oversamplingModel.getOversamplingFactor();
+        pushNextSampleIntoFifo(0.0f);
     }
 
     else
@@ -337,7 +339,12 @@ void ExciterAudioProcessor::stimulationBlock(juce::dsp::AudioBlock<float> &curre
                 auto lfoOutputSignal = lfoGenerator.getCurrentLFOValue() + (lfoOdd * oddMix.getNextValue() + lfoEeven * evenMix.getNextValue()) * rawTrim.getNextValue();
                 lfoOutputSignal *= getPhase(totalPhase);
                 
-                pushNextSampleIntoFifo(highPassFilter.processSample(ch, lfoOutputSignal));
+                pushNextSampleIntoFifo(((1.0 - mix.getNextValue()) * lfoGenerator.getCurrentLFOValue() + highPassFilter.processSample(ch, lfoOutputSignal) * mix.getNextValue()));
+            }
+            
+            else
+            {
+                pushNextSampleIntoFifo(0.0f);
             }
         }
     }
