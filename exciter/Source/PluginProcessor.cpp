@@ -23,7 +23,7 @@ ExciterAudioProcessor::ExciterAudioProcessor()
 treeState (*this, nullptr, "PARAMETER", createParameterLayout())
 , oversamplingModel(2, 4, juce::dsp::Oversampling<float>::FilterType::filterHalfBandPolyphaseIIR)
 , forwardFFT (fftOrder),
-window (forwardFFT.getSize(), juce::dsp::WindowingFunction<float>::hann, true)
+window (forwardFFT.getSize(), juce::dsp::WindowingFunction<float>::blackman, true)
 #endif
 {
     treeState.addParameterListener ("os", this);
@@ -86,6 +86,7 @@ void ExciterAudioProcessor::parameterChanged(const juce::String &parameterID, fl
             spec.sampleRate = getSampleRate() * oversamplingModel.getOversamplingFactor();
             topBandFilter.prepare(spec);
             bottomBandFilter.prepare(spec);
+            highPassFilter.prepare(spec);
         }
 
         else
@@ -93,6 +94,7 @@ void ExciterAudioProcessor::parameterChanged(const juce::String &parameterID, fl
             spec.sampleRate = getSampleRate();
             topBandFilter.prepare(spec);
             bottomBandFilter.prepare(spec);
+            highPassFilter.prepare(spec);
         }
     }
     
@@ -116,6 +118,7 @@ void ExciterAudioProcessor::updateParameters()
     cutoff.setTargetValue(treeState.getRawParameterValue("range")->load());
     topBandFilter.setCutoffFrequency(cutoff.getNextValue());
     bottomBandFilter.setCutoffFrequency(cutoff.getNextValue());
+    highPassFilter.setCutoffFrequency(cutoff.getNextValue() * 0.8);
     
     /** Odd */
     auto newOdd = juce::jmap(static_cast<float>(treeState.getRawParameterValue("odd")->load()), 0.0f, 10.0f, 0.0f, 1.0f);
@@ -133,6 +136,8 @@ void ExciterAudioProcessor::updateParameters()
     
     /** Phase */
     totalPhase = static_cast<bool>(treeState.getRawParameterValue("phase")->load());
+    
+    lfoGenerator.setParameter(viator_dsp::LFOGenerator::ParameterId::kFrequency, cutoff.getNextValue() * 1.25);
 }
 
 //==============================================================================
@@ -228,9 +233,14 @@ void ExciterAudioProcessor::prepareToPlay (double sampleRate, int samplesPerBloc
     bottomBandFilter.prepare(spec);
     bottomBandFilter.setType(juce::dsp::LinkwitzRileyFilterType::lowpass);
     
+    highPassFilter.prepare(spec);
+    highPassFilter.setType(juce::dsp::LinkwitzRileyFilterType::highpass);
+    
+    lfoGenerator.prepare(spec);
+    
     // Member variables
     updateParameters();
-    DBG(oversamplingModel.getOversamplingFactor());
+    
 }
 
 void ExciterAudioProcessor::releaseResources()
@@ -271,6 +281,7 @@ void ExciterAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce
     juce::dsp::AudioBlock<float> block (buffer);
     juce::dsp::AudioBlock<float> upSampledBlock (buffer);
 
+    
     // Oversample if ON
     if (osToggle)
     {
@@ -294,6 +305,8 @@ void ExciterAudioProcessor::stimulationBlock(juce::dsp::AudioBlock<float> &curre
         {
             float* data = currentBlock.getChannelPointer(ch);
             
+            lfoGenerator.process();
+            
             // Input
             const float input = data[sample];
             
@@ -314,7 +327,18 @@ void ExciterAudioProcessor::stimulationBlock(juce::dsp::AudioBlock<float> &curre
             // Apply phase to output
             data[sample] *= getPhase(totalPhase);
             
-            pushNextSampleIntoFifo(data[sample]);
+            /** Everything below this point is just for the non-audio spectrum*/
+            if (!osToggle)
+            {
+                float lfoOdd = std::atan(lfoGenerator.getCurrentLFOValue() * rawGain.getNextValue());
+                float lfoEeven = lfoGenerator.getCurrentLFOValue() * rawGain.getNextValue() + std::pow(lfoGenerator.getCurrentLFOValue() * rawGain.getNextValue(), 4);
+                
+                // Mix the odd even distortion
+                auto lfoOutputSignal = lfoGenerator.getCurrentLFOValue() + (lfoOdd * oddMix.getNextValue() + lfoEeven * evenMix.getNextValue()) * rawTrim.getNextValue();
+                lfoOutputSignal *= getPhase(totalPhase);
+                
+                pushNextSampleIntoFifo(highPassFilter.processSample(ch, lfoOutputSignal));
+            }
         }
     }
 }
@@ -351,7 +375,7 @@ void ExciterAudioProcessor::drawNextFrameOfSpectrum()
      
     for (int i = 0; i < scopeSize; ++i)
     {
-        auto skewedProportionX = 1.0f - std::exp (std::log (1.0f - (float) i / (float) scopeSize) * 0.2f);
+        auto skewedProportionX = 1.0f - std::exp (std::log (1.0f - (float) i / (float) scopeSize) * 0.75f);
         auto fftDataIndex = juce::jlimit (0, fftSize / 2, (int) (skewedProportionX * (float) fftSize * 0.5f));
         auto level = juce::jmap (juce::jlimit (mindB, maxdB, juce::Decibels::gainToDecibels (fftData[fftDataIndex])
                                                                    - juce::Decibels::gainToDecibels ((float) fftSize)),

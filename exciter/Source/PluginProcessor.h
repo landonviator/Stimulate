@@ -108,6 +108,7 @@ private:
     /** DSP */
     juce::dsp::LinkwitzRileyFilter<float> topBandFilter;
     juce::dsp::LinkwitzRileyFilter<float> bottomBandFilter;
+    juce::dsp::LinkwitzRileyFilter<float> highPassFilter;
     juce::dsp::Oversampling<float> oversamplingModel;
     
     void stimulationBlock(juce::dsp::AudioBlock<float> &currentBlock);
@@ -124,6 +125,14 @@ private:
     float fifo [fftSize];
     float fftData [2 * fftSize];
     int fifoIndex = 0;
+    
+    juce::dsp::Oscillator<float> oscModule { [] (float x)
+    {
+        return std::sin (x);
+    }};
+    
+    juce::dsp::AudioBlock<float> oscBlock;
+    viator_dsp::LFOGenerator lfoGenerator;
     
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (ExciterAudioProcessor)
