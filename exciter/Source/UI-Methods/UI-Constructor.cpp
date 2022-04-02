@@ -12,8 +12,9 @@
 
 void ExciterAudioProcessorEditor::uiConstructor()
 {
-    startTimerHz(10);
+    audioProcessor.pushNextSampleIntoFifo(0.0f);
     
+    startTimerHz(10);
     
     // Window
     initWindow();

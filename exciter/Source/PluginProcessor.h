@@ -85,6 +85,7 @@ public:
     bool nextFFTBlockReady = false;
     void drawNextFrameOfSpectrum();
     float scopeData [scopeSize];
+    void pushNextSampleIntoFifo (float sample) noexcept;
 
 private:
     
@@ -119,7 +120,6 @@ private:
     /** Spectrum analyzer */
     juce::dsp::FFT forwardFFT;
     juce::dsp::WindowingFunction<float> window;
-    void pushNextSampleIntoFifo (float sample) noexcept;
          
     /** FFT private vars */
     float fifo [fftSize];

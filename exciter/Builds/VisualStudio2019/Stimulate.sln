@@ -1,6 +1,5 @@
-﻿
 Microsoft Visual Studio Solution File, Format Version 11.00
-# Visual Studio Version 16
+# Visual Studio 2019
 
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Stimulate - Standalone Plugin", "Stimulate_StandalonePlugin.vcxproj", "{FD5ABCDC-2136-93BB-6C15-11B6FB3754DF}"
 	ProjectSection(ProjectDependencies) = postProject
