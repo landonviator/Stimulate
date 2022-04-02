@@ -78,7 +78,7 @@ public:
     {
         fftOrder  = 11,
         fftSize   = 1 << fftOrder,
-        scopeSize = 512
+        scopeSize = 1024
     };
         
     /** FFT public vars */

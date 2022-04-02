@@ -242,7 +242,6 @@ void ExciterAudioProcessor::prepareToPlay (double sampleRate, int samplesPerBloc
     
     // Member variables
     updateParameters();
-    
 }
 
 void ExciterAudioProcessor::releaseResources()
@@ -283,7 +282,6 @@ void ExciterAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce
     juce::dsp::AudioBlock<float> block (buffer);
     juce::dsp::AudioBlock<float> upSampledBlock (buffer);
 
-    
     // Oversample if ON
     if (osToggle)
     {
@@ -330,16 +328,17 @@ void ExciterAudioProcessor::stimulationBlock(juce::dsp::AudioBlock<float> &curre
             data[sample] *= getPhase(totalPhase);
             
             /** Everything below this point is just for the non-audio spectrum*/
-            if (!osToggle)
+            if (!osToggle && data[sample] != 0.0)
             {
-                float lfoOdd = std::atan(lfoGenerator.getCurrentLFOValue() * rawGain.getNextValue());
-                float lfoEeven = lfoGenerator.getCurrentLFOValue() * rawGain.getNextValue() + std::pow(lfoGenerator.getCurrentLFOValue() * rawGain.getNextValue(), 4);
+                float lfoRaw = lfoGenerator.getCurrentLFOValue();
+                float lfoOdd = std::atan(lfoRaw * rawGain.getNextValue());
+                float lfoEeven = lfoRaw * rawGain.getNextValue() + std::pow(lfoRaw * rawGain.getNextValue(), 4);
                 
                 // Mix the odd even distortion
-                auto lfoOutputSignal = lfoGenerator.getCurrentLFOValue() + (lfoOdd * oddMix.getNextValue() + lfoEeven * evenMix.getNextValue()) * rawTrim.getNextValue();
+                auto lfoOutputSignal = lfoOdd * oddMix.getNextValue() + lfoEeven * evenMix.getNextValue();
                 lfoOutputSignal *= getPhase(totalPhase);
                 
-                pushNextSampleIntoFifo(((1.0 - mix.getNextValue()) * lfoGenerator.getCurrentLFOValue() + highPassFilter.processSample(ch, lfoOutputSignal) * mix.getNextValue()));
+                pushNextSampleIntoFifo(lfoOutputSignal);
             }
             
             else
